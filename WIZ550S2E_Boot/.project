@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Bootloader</name>
+	<name>WIZ550S2E_Boot</name>
 	<comment></comment>
 	<projects>
 		<project>lpc_chip_11exx</project>
