@@ -8,13 +8,13 @@ These are Firmware projects (source code) based on LPCXpresso IDE.
   - Boot
 if you want to modify App modify as follows:
 ..\WIZ550S2E\wiznet_s2e_wiz550s2e_board\inc\board.h
-//#define _WIZ550S2E_APP_
-#define _WIZ550S2E_BOOT_
+    #define _WIZ550S2E_APP_
+    #define _WIZ550S2E_BOOT_
 
 if you want to modify Boot modify as follows:
 ..\WIZ550S2E\wiznet_s2e_wiz550s2e_board\inc\board.h
-#define _WIZ550S2E_APP_
-//#define _WIZ550S2E_BOOT_
+    //#define _WIZ550S2E_APP_
+    #define _WIZ550S2E_BOOT_
 
 ## Images
 ### WIZ550S2E Module
