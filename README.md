@@ -36,7 +36,7 @@ Serial to Ethernet Module based on W5500 & Cortex-M0
 - Hardware-Trigger Mode Switch
 - Status LEDs
 - DC-Jack (for +5V Input Power)
-- 
+
 ### WIZ550S2E-485/422 Interface Board
 <!-- WIZ550S2E-232 Interface Board pic -->
 <p align="center">
