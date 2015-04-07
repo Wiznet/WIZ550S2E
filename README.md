@@ -1,6 +1,12 @@
 # WIZ550S2E
 Serial to Ethernet Module based on W5500 & Cortex-M0
 
+## Software
+These are Firmware projects (source code) based on LPCXpresso IDE.
+- Firmware source code
+  - Application
+  - Boot
+
 ## Images
 ### WIZ550S2E Module
 
