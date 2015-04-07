@@ -13,7 +13,7 @@ These are Firmware projects (source code) based on LPCXpresso IDE.
 <!-- WIZ550S2E pic -->
 ![WIZ550S2E](http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:wiz550s2e_pin.jpg "WIZ550S2E")
 
-## Features & Benefits & Hardware Specification
+#### Features & Benefits & Hardware Specification
 - Serial to Ethernet Module based on TCP/IP Controller W5500 & Cortex-M0(MCU LPC11E36FHN33) 
 - RJ-45 mounted, Pin-header type module
 - Serial signals : TXD, RXD, RTS, CTS, GND
@@ -35,7 +35,7 @@ These are Firmware projects (source code) based on LPCXpresso IDE.
 <p align="center">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_wiz550s2e-232-evb.png" />
 </p>
-## Features
+#### Features
 - Line Driver SP3232EBEY
 - System Reset Switch
 - Factory Reset Switch
@@ -51,7 +51,7 @@ These are Firmware projects (source code) based on LPCXpresso IDE.
 <p align="center">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_wiz550s2e-485-evb.png" />
 </p>
-## Features
+#### Features
 - Line Driver SP3485EN
 - System Reset Switch
 - Factory Reset Switch
