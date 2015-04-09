@@ -73,7 +73,7 @@ Install JAVA Runtime Environment
 3. Install the downloaded installation file.
 4. When you run the Terminal, type the "java -version" command, the following message is displayed.
 ![2](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563628&w=500&h=100&tok=1cadd9&media=products:wiz550s2e:2.png "2")
-5. [wiki page](http://wizwiki.net/wiki/).
+5. [WIZ550S2E wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download).
 6. Configuration Tool for WIZ550S2E download.
 ![3](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=375&tok=02960c&media=products:wiz550s2e:3.png "3")
 7. Then Unzipped the downloaded zip file. Excutable jar file is created.
