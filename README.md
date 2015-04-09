@@ -1,7 +1,7 @@
 # WIZ550S2E
 Serial to Ethernet Module based on W5500 & Cortex-M0
 
-## Software
+## Firmware
 These are Firmware projects (source code) based on LPCXpresso IDE.
 - Firmware source code
   - Application
@@ -60,6 +60,28 @@ These are Firmware projects (source code) based on LPCXpresso IDE.
 - DC-Jack (for +5V Input Power)
 
 For more details, please refer to [WIZ550S2Eweb Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
+
+## Configuration Tool
+WIZnet Configuration Tool made Java base. so runs on any OS that JRE be installed. 
+Install JAVA Runtime Environment 
+1. [java page](http://www.java.com)
+2. Go to the Download tab to download the installation files for the PC environment
+<!-- 1 pic -->
+![1](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=321&tok=b6bae3&media=products:wiz550s2e:1.png "1")
+3. Install the downloaded installation file
+4. When you run the Terminal, type the "java -version" command, the following message is displayed.
+<!-- 2 pic -->
+![2](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563628&w=500&h=100&tok=1cadd9&media=products:wiz550s2e:2.png "2")
+5. [wiki page](http://wizwiki.net/wiki/)
+6. Configuration Tool for WIZ550S2E download
+<!-- 3 pic -->
+![3](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=375&tok=02960c&media=products:wiz550s2e:3.png "3")
+7. Then Unzipped the downloaded zip file. Excutable jar file is created.
+8. Excute file
+ * Jar file double click at GUI.
+ * Type the “java -jar WIZ550S2E_Configuration_Tool.jar” command at Terminal.
+<!-- 4 pic -->
+![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
 
 ## Revision History
 v1.0.0
