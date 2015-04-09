@@ -4,7 +4,7 @@
 
 #define MAJOR_VER		101
 #define MINOR_VER		0
-#define MAINTENANCE_VER	0
+#define MAINTENANCE_VER	1
 
 #define SOCK_DATA		0
 #define SOCK_CONFIG		1
