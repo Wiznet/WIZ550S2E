@@ -52,7 +52,7 @@ clean:
 
 post-build:
 	-@echo 'Performing post-build steps'
-	-arm-none-eabi-size "WIZ550S2E_App.axf" ; arm-none-eabi-objcopy -O ihex "WIZ550S2E_App.axf" "WIZ550S2E_App.hex" ; # arm-none-eabi-objcopy -v -O binary "WIZ550S2E_App.axf" "WIZ550S2E_App.bin" ; # checksum -p LPC11E36_501 -d "WIZ550S2E_App.bin"
+	-arm-none-eabi-size "WIZ550S2E_App.axf" ; arm-none-eabi-objcopy -O ihex "WIZ550S2E_App.axf" "WIZ550S2E_App.hex" ; arm-none-eabi-objcopy -v -O binary "WIZ550S2E_App.axf" "WIZ550S2E_App.bin" ; # checksum -p LPC11E36_501 -d "WIZ550S2E_App.bin"
 	-@echo ' '
 
 .PHONY: all clean dependents
