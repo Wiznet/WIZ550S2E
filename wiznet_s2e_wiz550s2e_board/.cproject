@@ -87,7 +87,7 @@
 					<folderInfo id="com.crt.advproject.config.lib.release.243967633." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.lib.release.1126149427" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.lib.release">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.lib.release.2075994805" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.lib.release"/>
-							<builder buildPath="${workspace_loc:/wiznet_s2e_wiz550s2e_board/Release}" id="com.crt.advproject.builder.lib.release.1218871753" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.crt.advproject.builder.lib.release"/>
+							<builder buildPath="${workspace_loc:/wiznet_s2e_wiz550s2e_board/Release}" id="com.crt.advproject.builder.lib.release.1218871753" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.lib.release"/>
 							<tool id="com.crt.advproject.cpp.lib.release.1945163062" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.lib.release"/>
 							<tool id="com.crt.advproject.gcc.lib.release.1240959788" name="MCU C Compiler" superClass="com.crt.advproject.gcc.lib.release">
 								<option id="com.crt.advproject.gcc.arch.158084633" name="Architecture" superClass="com.crt.advproject.gcc.arch" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
@@ -186,10 +186,16 @@
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.lib.release.243967633;com.crt.advproject.config.lib.release.243967633.;com.crt.advproject.gcc.lib.release.1240959788;com.crt.advproject.compiler.input.217962730">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.lib.release.243967633;com.crt.advproject.config.lib.release.243967633.;com.crt.advproject.gas.lib.release.1339222003;com.crt.advproject.assembler.input.581559717">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.lib.release.243967633;com.crt.advproject.config.lib.release.243967633.;com.crt.advproject.gcc.lib.release.1240959788;com.crt.advproject.compiler.input.217962730">
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.lib.debug.1764386042;com.crt.advproject.config.lib.debug.1764386042.;com.crt.advproject.gcc.lib.debug.354120263;com.crt.advproject.compiler.input.9113867">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.lib.debug.1764386042;com.crt.advproject.config.lib.debug.1764386042.;com.crt.advproject.gas.lib.debug.870035061;com.crt.advproject.assembler.input.1546265202">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
