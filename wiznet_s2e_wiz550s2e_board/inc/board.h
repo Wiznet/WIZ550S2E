@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-//#define _WIZ550S2E_APP_
+#define _WIZ550S2E_APP_
 #define _WIZ550S2E_BOOT_
 
 /** @defgroup BOARD_NXP_XPRESSO_11U37H NXP LPC11U37H LPCXpresso board support software API functions

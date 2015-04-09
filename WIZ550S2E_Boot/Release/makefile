@@ -35,7 +35,7 @@ all: WIZ550S2E_Boot.axf
 WIZ550S2E_Boot.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -L"D:\_GitHub\WIZ550S2E\wiznet_s2e_wiz550s2e_board\Release" -L"D:\_GitHub\WIZ550S2E\lpc_chip_11exx\Release" -Xlinker -Map="WIZ550S2E_Boot.map" -Xlinker --gc-sections -Xlinker --allow-multiple-definition -mcpu=cortex-m0 -mthumb -T "Bootloader.ld" -L ../linkscripts -o "WIZ550S2E_Boot.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -L"D:\WIZnet\Workspace_LPCXpresso_7.5.0_254\wiznet_s2e_wiz550s2e_board\Release" -L"D:\WIZnet\Workspace_LPCXpresso_7.5.0_254\lpc_chip_11exx\Release" -Xlinker -Map="WIZ550S2E_Boot.map" -Xlinker --gc-sections -Xlinker --allow-multiple-definition -mcpu=cortex-m0 -mthumb -T "Bootloader.ld" -L ../linkscripts -o "WIZ550S2E_Boot.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

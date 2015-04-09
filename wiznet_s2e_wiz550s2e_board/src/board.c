@@ -43,6 +43,7 @@
 /* System oscillator rate and clock rate on the CLKIN pin */
 const uint32_t OscRateIn = 12000000;
 const uint32_t ExtRateIn = 0;
+uint8_t factory_flag = 0;
 
 /*****************************************************************************
  * Private functions
@@ -143,7 +144,7 @@ void Board_LED_Toggle(uint8_t LEDNumber)
 	}
 }
 #if defined(_WIZ550S2E_APP_)
-extern uint8_t factory_flag;
+//extern uint8_t factory_flag;
 
 #define GPIO_PININT_FACTORY		0
 void FLEX_INT0_IRQHandler(void)

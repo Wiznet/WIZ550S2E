@@ -22,7 +22,7 @@ uint32_t ether_recv_prev;
 uint8_t trigger_flag = 0;
 uint32_t trigger_time = 0;
 
-uint8_t factory_flag = 0;
+extern uint8_t factory_flag;
 uint32_t factory_time = 0;
 
 uint8_t auth_flag = 0;
