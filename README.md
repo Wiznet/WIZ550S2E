@@ -7,7 +7,7 @@ Firmware source code.
 - Application
 - Boot
 
-the order of compile.
+**the order of compile.**
 
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
