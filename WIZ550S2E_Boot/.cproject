@@ -19,7 +19,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.debug.364555958." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.debug.782992002" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug.1099776849" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
-							<builder buildPath="${workspace_loc:/WIZ550S2E_Boot/Release}" command="make" id="com.crt.advproject.builder.exe.debug.734562767" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
+							<builder buildPath="${workspace_loc:/WIZ550S2E_Boot/Release}" id="com.crt.advproject.builder.exe.debug.734562767" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.debug"/>
 							<tool id="com.crt.advproject.cpp.exe.debug.406169110" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug"/>
 							<tool id="com.crt.advproject.gcc.exe.debug.1163164486" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug">
 								<option id="com.crt.advproject.gcc.arch.304814877" name="Architecture" superClass="com.crt.advproject.gcc.arch" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
@@ -35,20 +35,27 @@
 									<listOptionValue builtIn="false" value="__LPC11EXX__"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.1302000729" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections" valueType="string"/>
-								<option id="com.crt.advproject.gcc.hdrlib.1294555843" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" value="Redlib" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.hdrlib.1294555843" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" value="com.crt.advproject.gcc.hdrlib.codered" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.145863252" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_11exx/inc}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/wiznet_s2e_wiz550s2e_board/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WIZ550S2E_Boot/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WIZ550S2E_Boot/src/Configuration}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WIZ550S2E_Boot/src/Ethernet}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WIZ550S2E_Boot/src/Internet}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WIZ550S2E_Boot/src/netutil}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/WIZ550S2E_Boot/src/PlatformHandler}&quot;"/>
 								</option>
-								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.460038348" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.460038348" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.exe.debug.option.debugging.level.1343885798" name="Debug Level" superClass="com.crt.advproject.gcc.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.1022312347" superClass="com.crt.advproject.compiler.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gas.exe.debug.243807376" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug">
 								<option id="com.crt.advproject.gas.arch.1104725910" name="Architecture" superClass="com.crt.advproject.gas.arch" value="com.crt.advproject.gas.target.cm0" valueType="enumerated"/>
 								<option id="com.crt.advproject.gas.thumb.1271078314" name="Thumb mode" superClass="com.crt.advproject.gas.thumb" value="true" valueType="boolean"/>
 								<option id="gnu.both.asm.option.flags.crt.601792654" name="Assembler flags" superClass="gnu.both.asm.option.flags.crt" value="-c -x assembler-with-cpp -D__REDLIB__ -DDEBUG -D__CODE_RED -D__USE_ROMDIVIDE" valueType="string"/>
-								<option id="com.crt.advproject.gas.hdrlib.9495051" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" value="Redlib" valueType="enumerated"/>
+								<option id="com.crt.advproject.gas.hdrlib.9495051" name="Library headers" superClass="com.crt.advproject.gas.hdrlib" value="com.crt.advproject.gas.hdrlib.codered" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1931685482" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="com.crt.advproject.assembler.input.1132278900" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
 							</tool>
@@ -66,12 +73,12 @@
 								</option>
 								<option id="com.crt.advproject.link.gcc.hdrlib.1731905159" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib" value="com.crt.advproject.gcc.link.hdrlib.codered.nohost" valueType="enumerated"/>
 								<option id="gnu.c.link.option.libs.538455266" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" value="wiznet_s2e_wiz550s2e_board"/>
 									<listOptionValue builtIn="false" value="lpc_chip_11exx"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="wiznet_s2e_wiz550s2e_board"/>
 								</option>
 								<option id="gnu.c.link.option.paths.1479858575" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_11exx/Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/wiznet_s2e_wiz550s2e_board/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_11exx/Debug}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.link.crpenable.1156728532" name="Enable Code Read Protect" superClass="com.crt.advproject.link.crpenable" value="true" valueType="boolean"/>
 								<option id="com.crt.advproject.link.gcc.multicore.slave.542246380" name="Multicore configuration" superClass="com.crt.advproject.link.gcc.multicore.slave"/>
@@ -84,12 +91,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.crt.advproject.config.exe.debug.364555958.src/cr_startup_lpc11exx.c" name="cr_startup_lpc11exx.c" rcbsApplicability="disable" resourcePath="src/cr_startup_lpc11exx.c" toolsToInvoke="com.crt.advproject.gcc.exe.debug.1163164486.454441174">
-						<tool id="com.crt.advproject.gcc.exe.debug.1163164486.454441174" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1163164486">
-							<option id="com.crt.advproject.gcc.exe.debug.option.optimization.level.1435219746" name="Optimization Level" superClass="com.crt.advproject.gcc.exe.debug.option.optimization.level" value="gnu.c.optimization.level.size" valueType="enumerated"/>
-							<inputType id="com.crt.advproject.compiler.input.459382793" superClass="com.crt.advproject.compiler.input"/>
-						</tool>
-					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
@@ -116,7 +117,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.release.927854120." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.release.380682893" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.release">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.release.569726019" name="ARM-based MCU (Release)" superClass="com.crt.advproject.platform.exe.release"/>
-							<builder buildPath="${workspace_loc:/WIZ550S2E_Boot/Release}" id="com.crt.advproject.builder.exe.release.1745157749" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.release"/>
+							<builder buildPath="${workspace_loc:/WIZ550S2E_Boot/Release}" id="com.crt.advproject.builder.exe.release.1745157749" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.release"/>
 							<tool id="com.crt.advproject.cpp.exe.release.1153613786" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.release"/>
 							<tool id="com.crt.advproject.gcc.exe.release.1168640583" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.release">
 								<option id="com.crt.advproject.gcc.arch.141259901" name="Architecture" superClass="com.crt.advproject.gcc.arch" value="com.crt.advproject.gcc.target.cm0" valueType="enumerated"/>
@@ -255,13 +256,13 @@
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.927854120;com.crt.advproject.config.exe.release.927854120.;com.crt.advproject.gcc.exe.release.1168640583;com.crt.advproject.compiler.input.524379899">
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.364555958;com.crt.advproject.config.exe.debug.364555958.;com.crt.advproject.gas.exe.debug.243807376;com.crt.advproject.assembler.input.1132278900">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.364555958;com.crt.advproject.config.exe.debug.364555958.;com.crt.advproject.gcc.exe.debug.1163164486;com.crt.advproject.compiler.input.1022312347">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.364555958;com.crt.advproject.config.exe.debug.364555958.;com.crt.advproject.gas.exe.debug.243807376;com.crt.advproject.assembler.input.1132278900">
+		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.927854120;com.crt.advproject.config.exe.release.927854120.;com.crt.advproject.gcc.exe.release.1168640583;com.crt.advproject.compiler.input.524379899">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.release.927854120;com.crt.advproject.config.exe.release.927854120.;com.crt.advproject.gas.exe.release.1978741092;com.crt.advproject.assembler.input.979051227">
