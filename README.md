@@ -1,25 +1,19 @@
 # WIZ550S2E
 Serial to Ethernet Module based on W5500 & Cortex-M0
 
-## Software
+## Firmware
 These are Firmware projects (source code) based on LPCXpresso IDE.
-- Firmware source code
-  - Application
-  - Boot
+Firmware source code.
+- Application
+- Boot
 
-if you want to **modify App** modify as follows:
+**the order of compile.**
 
-..\WIZ550S2E\wiznet_s2e_wiz550s2e_board\inc\board.h
+1. lpc_chip_11exx.
+2. wiznet_s2e_wiz550s2e_board.
+3. WIZ550S2E_App.
 
-    #define _WIZ550S2E_APP_
-    //#define _WIZ550S2E_BOOT_
-
-if you want to **modify Boot** modify as follows:
-
-..\WIZ550S2E\wiznet_s2e_wiz550s2e_board\inc\board.h
-
-    //#define _WIZ550S2E_APP_
-    #define _WIZ550S2E_BOOT_
+![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
 ## Images
 ### WIZ550S2E Module
@@ -74,6 +68,27 @@ if you want to **modify Boot** modify as follows:
 - DC-Jack (for +5V Input Power)
 
 For more details, please refer to [WIZ550S2Eweb Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
+
+## Configuration Tool
+
+WIZnet Configuration Tool made Java base. so runs on any OS that JRE be installed. 
+
+Install JAVA Runtime Environment 
+
+1. [java page](http://www.java.com).
+2. Go to the Download tab to download the installation files for the PC environment.
+![1](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=321&tok=b6bae3&media=products:wiz550s2e:1.png "1")
+3. Install the downloaded installation file.
+4. When you run the Terminal, type the "java -version" command, the following message is displayed.
+![2](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563628&w=500&h=100&tok=1cadd9&media=products:wiz550s2e:2.png "2")
+5. [WIZ550S2E wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download).
+6. Configuration Tool for WIZ550S2E download.
+![3](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=375&tok=02960c&media=products:wiz550s2e:3.png "3")
+7. Then Unzipped the downloaded zip file. Excutable jar file is created.
+8. Excute file.
+ * Jar file double click at GUI.
+ * Type the “java -jar WIZ550S2E_Configuration_Tool.jar” command at Terminal.
+![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
 
 ## Revision History
 v1.0.0
