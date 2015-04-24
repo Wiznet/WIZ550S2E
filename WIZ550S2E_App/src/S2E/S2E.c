@@ -248,6 +248,8 @@ static void uart_to_ether(uint8_t sock)
 
 static void trigger_none_process(uint8_t sock_state)
 {
+	struct __network_info *net = (struct __network_info *)get_S2E_Packet_pointer()->network_info;
+
 	if(trigger_flag == 2) {
 		trigger_state = TRIG_STATE_READY;
 #ifdef __TRIG_DEBUG__
@@ -258,13 +260,13 @@ static void trigger_none_process(uint8_t sock_state)
 		return;
 	}
 
-	if(uart_size_prev == RingBuffer_GetCount(&rxring)) {			// UART 수신 데이터가 없으면
+	if(uart_size_prev == RingBuffer_GetCount(&rxring)) {			// UART ?�신 ?�이?��? ?�으�?
 		if(trigger_flag == 0)
 			trigger_flag = 1;
 	} else {
 		trigger_flag = trigger_time = 0;
 		uart_size_prev = RingBuffer_GetCount(&rxring);
-		if((sock_state != SOCK_ESTABLISHED) && (sock_state != SOCK_UDP)) {
+		if((sock_state != SOCK_ESTABLISHED) && (sock_state != SOCK_UDP) && (net->working_mode != TCP_MIXED_MODE)) {
 			UART_buffer_flush(&rxring);
 			uart_size_prev = 0;
 		}
@@ -563,7 +565,7 @@ static void s2e_sockudp_process(uint8_t sock)
 			break;
 
 		case UDP_MODE:
-			/* S2E 동작 */
+			/* S2E ?�작 */
 			ether_to_uart(sock);
 			uart_to_ether(sock);
 			break;
