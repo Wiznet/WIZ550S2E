@@ -17,7 +17,7 @@
 #include "atcmd.h"
 #include "cmdrun.h"
 #include "ConfigData.h"
-#include "uarthandler.h"
+#include "uartHandler.h"
 
 #define CMD_CLEAR() { \
 	atci.tcmd.op[0] =   atci.tcmd.sign =    atci.tcmd.arg1[0] = atci.tcmd.arg2[0] = 0; \

@@ -16,7 +16,7 @@
 #include "eepromHandler.h"
 #include "DNS/dns.h"
 #include "uartHandler.h"
-#include "timerhandler.h"
+#include "timerHandler.h"
 
 #define SOCK_STAT_TCP_MASK	0x2
 #define SOCK_STAT_PROTMASK	0x3

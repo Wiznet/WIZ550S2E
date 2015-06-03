@@ -2,7 +2,7 @@
 #include "wizchip_conf.h"
 #include "socket.h"
 #include "ConfigData.h"
-#include "timerhandler.h"
+#include "timerHandler.h"
 
 /*****************************************************************************
  * Private types/enumerations/variables
