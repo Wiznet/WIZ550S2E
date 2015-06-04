@@ -7,7 +7,7 @@
 
 /* Includes -----------------------------------------------------*/
 #include "board.h"
-#include "uarthandler.h"
+#include "uartHandler.h"
 
 /* define -------------------------------------------------------*/
 #ifdef UART_IRQHandler

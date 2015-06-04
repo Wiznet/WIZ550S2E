@@ -6,9 +6,9 @@
 #include "ConfigData.h"
 #include "ring_buffer.h"
 
-#include "timerhandler.h"
+#include "timerHandler.h"
 #include "eepromHandler.h"
-#include "uarthandler.h"
+#include "uartHandler.h"
 
 extern uint8_t g_send_buf[WORK_BUF_SIZE];
 extern uint8_t g_recv_buf[WORK_BUF_SIZE];
