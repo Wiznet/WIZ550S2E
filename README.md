@@ -67,7 +67,7 @@ Firmware source code.
 - Status LEDs
 - DC-Jack (for +5V Input Power)
 
-For more details, please refer to [WIZ550S2Eweb Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
+For more details, please refer to [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
 
 ## Configuration Tool
 
