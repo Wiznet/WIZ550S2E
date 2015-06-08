@@ -18,7 +18,6 @@ Firmware source code.
 **Firmware fusing**
 updating...
 
-1. 
 ## Images
 ### WIZ550S2E Module
 
