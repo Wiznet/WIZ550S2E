@@ -7,7 +7,7 @@ Firmware source code.
 - Application
 - Boot
 
-**the order of compile.**
+**the order of compile**
 
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
@@ -15,6 +15,10 @@ Firmware source code.
 
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
+**Firmware fusing**
+updating...
+
+1. 
 ## Images
 ### WIZ550S2E Module
 
