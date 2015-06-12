@@ -32,7 +32,7 @@ Firmware source code.
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png" />
 </p>
 
-4. Short J5 and push Reset switch. 
+4. Short J5 and push reset switch. 
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png" />
 </p>
