@@ -16,15 +16,25 @@ Firmware source code.
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
 **Firmware fusing**
+
 1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable
+
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=500&h=374&tok=390d68&media=products:wiz550s2e:wiz550s2e_fw_up_1.png "s2e")
+
 2. HW/TRIG switch off
+
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=378&tok=d39e60&media=products:wiz550s2e:wiz550s2e_fw_up_2.png "s2e")
+
 3. check LED
+
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png "s2e")
+
 4. short J5 
+
 ![s2e]( http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png "s2e")
+
 5. firmware fusing useing Flash Magic
+
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png "s2e")
 
 ## Images
