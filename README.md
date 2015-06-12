@@ -7,7 +7,7 @@ Firmware source code.
 - Application
 - Boot
 
-**the order of compile**
+**The order of compile**
 
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
@@ -18,27 +18,27 @@ Firmware source code.
 **Firmware download**
 
 1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.
-<p align="center">
+<p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=500&h=374&tok=390d68&media=products:wiz550s2e:wiz550s2e_fw_up_1.png" />
 </p>
 
 2. HW/TRIG switch off.
-<p align="center">
+<p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=378&tok=d39e60&media=products:wiz550s2e:wiz550s2e_fw_up_2.png" />
 </p>
 
 3. Check LED.
-<p align="center">
+<p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png" />
 </p>
 
 4. Short J5. 
-<p align="center">
+<p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png" />
 </p>
 
 5. firmware download useing Flash Magic.
-<p align="center">
+<p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png" />
 </p>
 
