@@ -32,7 +32,6 @@ Firmware source code.
 5. firmware fusing useing Flash Magic.
 ![E](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png "E")
 
-
 ## Images
 ### WIZ550S2E Module
 
