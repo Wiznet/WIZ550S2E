@@ -18,24 +18,29 @@ Firmware source code.
 **Firmware download**
 
 1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.
+<p align="center">
+  <img width="100%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=500&h=374&tok=390d68&media=products:wiz550s2e:wiz550s2e_fw_up_1.png" />
+</p>
 
-![A](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=500&h=374&tok=390d68&media=products:wiz550s2e:wiz550s2e_fw_up_1.png "A")
+2. HW/TRIG switch off.
+<p align="center">
+  <img width="100%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=378&tok=d39e60&media=products:wiz550s2e:wiz550s2e_fw_up_2.png" />
+</p>
 
-3. HW/TRIG switch off.
-
-![B](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=378&tok=d39e60&media=products:wiz550s2e:wiz550s2e_fw_up_2.png "B")
-
-4. Check LED.
-
-![C](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png "C")
+3. Check LED.
+<p align="center">
+  <img width="100%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png" />
+</p>
 
 4. Short J5. 
+<p align="center">
+  <img width="100%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png" />
+</p>
 
-![D]( http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png "D")
-
-6. firmware download useing Flash Magic.
-
-![E](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png "E")
+5. firmware download useing Flash Magic.
+<p align="center">
+  <img width="100%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png" />
+</p>
 
 ## Images
 ### WIZ550S2E Module
