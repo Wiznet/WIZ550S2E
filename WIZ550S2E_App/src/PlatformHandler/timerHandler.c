@@ -18,6 +18,8 @@ uint8_t inactive_flag = 0;
 uint32_t inactive_time = 0;
 uint32_t ether_send_prev;
 uint32_t ether_recv_prev;
+uint8_t keepsend_flag = 0;
+uint32_t keepsend_time = 0;
 
 uint8_t trigger_flag = 0;
 uint32_t trigger_time = 0;
@@ -145,6 +147,14 @@ void TIMER32_0_IRQHandler(void)
 			/* DNS Process */
 			if(option->dns_use) {
 				run_dns = 1;
+			}
+		}
+		/* Keepsend Time Process */
+		if(keepsend_flag == 1) {
+			keepsend_time++;
+			if((keepsend_time % 5) == 0) {
+				keepsend_time = 0;
+				keepsend_flag = 2;
 			}
 		}
 	}

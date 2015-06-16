@@ -503,6 +503,7 @@ static void s2e_socklisten_process(uint8_t sock)
 
 static void s2e_sockestablished_process(uint8_t sock)
 {
+	uint8_t tmp;
 	struct __network_info *net = (struct __network_info *)get_S2E_Packet_pointer()->network_info;
 
 	if(reconn_flag)
@@ -521,6 +522,21 @@ static void s2e_sockestablished_process(uint8_t sock)
 			else if(inactive_flag == 2) {
 				inactive_flag = 0;
 				disconnect(sock);
+			}
+
+			if(keepsend_flag == 0)
+			{
+				keepsend_flag = 1;
+			}
+			else if(keepsend_flag == 2)
+			{
+				keepsend_flag = 0;
+
+				ctlwizchip(CW_GET_PHYLINK, (void*) &tmp);
+				if(tmp == PHY_LINK_OFF)
+				{
+					disconnect(sock);
+				}
 			}
 			ether_to_uart(sock);
 			uart_to_ether(sock);

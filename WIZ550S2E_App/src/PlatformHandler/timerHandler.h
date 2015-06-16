@@ -15,6 +15,8 @@ extern uint8_t inactive_flag;
 extern uint32_t inactive_time;
 extern uint32_t ether_send_prev;
 extern uint32_t ether_recv_prev;
+extern uint8_t keepsend_flag;
+extern uint32_t keepsend_time;
 
 extern uint8_t trigger_flag;
 extern uint32_t trigger_time;
