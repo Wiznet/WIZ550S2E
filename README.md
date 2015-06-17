@@ -16,6 +16,7 @@ Firmware source code.
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
 **Firmware download**
+
 In this case there is only just .hex file.
 if you would like to use .bin file, look at the following that : Configuration Tool in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start)
 
