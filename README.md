@@ -18,7 +18,8 @@ Firmware source code.
 **Firmware download**
 
 In this case there is only just .hex file.
-if you would like to use .bin file, look at the following that : Configuration Tool/FW Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start)
+
+If you would like to use .bin file, look at the following that : Configuration Tool/FW Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start)
 
 1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.
 <p align="left">
