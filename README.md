@@ -1,8 +1,8 @@
 # WIZ550S2E
-Serial to Ethernet Module based on W5500 & Cortex-M0
+Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
 
 ## Firmware
-These are Firmware projects (source code) based on LPCXpresso IDE.
+These are Firmware projects (source code) based on [LPCXpresso IDE](https://www.lpcware.com/lpcxpresso).
 Firmware source code.
 - Application
 - Boot
@@ -11,15 +11,15 @@ Firmware source code.
 
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
-3. WIZ550S2E_App.
+3. WIZ550S2E_App or WIZ550S2E_Boot.
 
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
 **Firmware download**
 
-In this case there is only just .hex file.
+In this case there is only just [.hex file.](https://github.com/Wiznet/WIZ550S2E/releases)
 
-If you would like to use .bin file, look at the following that : Configuration Tool/FW Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start)
+If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download), look at the following that : Configuration Tool/FW Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start)
 
 1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.
 <p align="left">
@@ -41,7 +41,7 @@ If you would like to use .bin file, look at the following that : Configuration T
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png" />
 </p>
 
-5. firmware download useing Flash Magic.
+5. firmware download using [Flash Magic](http://www.flashmagictool.com/).
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png" />
 </p>
