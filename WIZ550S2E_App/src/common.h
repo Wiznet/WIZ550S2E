@@ -6,7 +6,7 @@
 
 #define MAJOR_VER		1
 #define MINOR_VER		0
-#define MAINTENANCE_VER	1
+#define MAINTENANCE_VER	2
 
 #define SOCK_DATA		0
 #define SOCK_CONFIG		1
