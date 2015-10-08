@@ -2,10 +2,10 @@
 Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
 
 ## Firmware
-These are Firmware projects (source code) based on [LPCXpresso IDE](https://www.lpcware.com/lpcxpresso).
-Firmware source code.
+These are Firmware projects (source code) based on [LPCXpresso IDE](https://www.lpcware.com/lpcxpresso) (it has been optimized in LPCXpresso v7.5.0_254)
+Firmware source code are two types as follows.
 - Application
-- Boot
+- Bootloader
 
 **The order of compile**
 
@@ -124,3 +124,14 @@ Install JAVA Runtime Environment
 ## Revision History
 v1.0.0
 - First release : Apr. 2015
+
+v1.0.1
+- fix Project set
+
+v1.0.2
+- fix bug in Mixed mode
+	- before : in Mixed mode connect server serial data include '+'
+	- after : in Mixed mode connect server Any serial data
+- fix bug in atcommand
+	- before : at = a t
+	- after : at != a t
