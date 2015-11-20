@@ -126,12 +126,16 @@ v1.0.0
 - First release : Apr. 2015
 
 v1.0.1
-- fix Project set
+- Fixed Project set
 
 v1.0.2
-- fix bug in Mixed mode
-	- before : in Mixed mode connect server serial data include '+'
-	- after : in Mixed mode connect server Any serial data
-- fix bug in atcommand
-	- before : at = a t
-	- after : at != a t
+- Fixed bug 
+	- In mixed mode
+		- Before : when connecting to the server, the '+' had to be include in the serial data.
+		- After : when serial data is generated directly connecting
+	- In AT command
+		- Before : at = a t. in other words, ignore space.
+		- After : at != a t. in other words, admitte space.
+- Add function
+	- Check unlink in mixed mode
+	- AT+FDNS = domain name
