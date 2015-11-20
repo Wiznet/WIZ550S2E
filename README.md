@@ -132,7 +132,7 @@ v1.0.2
 - Fixed bug 
 	- In mixed mode
 		- Before : when connecting to the server, the '+' had to be include in the serial data.
-		- After : when serial data is generated directly connecting
+		- After : when serial data is generated directly connecting.
 	- In AT command
 		- Before : at = a t. in other words, ignore space.
 		- After : at != a t. in other words, admitte space.
