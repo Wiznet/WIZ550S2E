@@ -60,6 +60,7 @@ static void hdl_nauto(void);
 static void hdl_nclose(void);
 static void hdl_nsend(void);
 static void hdl_nsock(void);
+static void hdl_nmode(void);
 
 static void hdl_mset(void);
 static void hdl_mstat(void);
@@ -94,6 +95,7 @@ const struct at_command g_cmd_table[] =
 	{ "NCLOSE",		hdl_nclose, 	NULL, NULL },
 	{ "NSEND",		hdl_nsend,	 	NULL, NULL },
 	{ "NSOCK",		hdl_nsock,	 	NULL, NULL },
+	{ "NMODE",		hdl_nmode,	 	NULL, NULL },
 
 	{ "MSET",		hdl_mset,	 	NULL, NULL },
 	{ "MSTAT",		hdl_mstat,	 	NULL, NULL },
@@ -603,7 +605,107 @@ static void hdl_nopen(void)
 	}
 	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
 }
+static void hdl_nmode(void)
+{
+	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP
+	uint8_t DstIP[4], *dip = NULL;
+	uint16_t SrcPort, DstPort = 0;
 
+	if(atci.tcmd.sign == CMD_SIGN_NONE)
+	{
+		atci.tcmd.sign = CMD_SIGN_QUEST;
+	}
+	if(atci.tcmd.sign == CMD_SIGN_QUEST)
+	{
+		CMD_CLEAR();
+		act_nmode_q();
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV)
+	{
+		RESP_CR(RET_WRONG_SIGN);
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
+	{
+		if(CMP_CHAR_4(atci.tcmd.arg1, 'S', 'C', 'M', 'U'))
+		{
+			RESP_CDR(RET_WRONG_ARG, 1);
+		}
+
+		if(atci.tcmd.arg1[0] == 'S')
+		{
+			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 2);
+			}
+			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 3);
+			}
+			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 4);
+			}
+			dip = DstIP;
+		}
+		else if(atci.tcmd.arg1[0] == 'C')
+		{
+			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 2);
+			}
+			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 3);
+			}
+			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 4);
+			}
+			dip = DstIP;
+		}
+		else if(atci.tcmd.arg1[0] == 'M')
+		{
+			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 2);
+			}
+			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 3);
+			}
+			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 4);
+			}
+			dip = DstIP;
+		}
+		else if(atci.tcmd.arg1[0] == 'U')
+		{
+			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 2);
+			}
+			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 3);
+			}
+			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
+			{
+				RESP_CDR(RET_WRONG_ARG, 4);
+			}
+			dip = DstIP;
+		}
+		else
+		{	// 'A'	무시??책??냐 ??니?????? ??인 ??책??냐
+			// Nothing to do for A mode
+		}
+		CHK_ARG_LEN(atci.tcmd.arg5, 0, 5);
+		type = atci.tcmd.arg1[0];
+		CMD_CLEAR();
+		act_nmode_a(type, SrcPort, dip, DstPort);
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
+}
 static void hdl_nauto(void)
 {
 	RESP_CR(RET_NOT_ALLOWED);

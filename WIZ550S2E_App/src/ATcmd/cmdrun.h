@@ -128,6 +128,8 @@ void act_nmac_q(void);
 void act_nmac_a(uint8_t *mac);
 void act_nopen_q(void);
 void act_nopen_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport);
+void act_nmode_q(void);
+void act_nmode_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport);
 void act_nclose(uint8_t sock);
 int8_t act_nsend_chk(uint8_t sock, uint16_t *len, uint8_t *dip, uint16_t *dport);
 void act_nsend(uint8_t sock, int8_t *buf, uint16_t len, uint8_t *dip, uint16_t *dport);
