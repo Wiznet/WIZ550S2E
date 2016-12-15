@@ -4,13 +4,16 @@ Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=p
 ## Firmware
 These are Firmware projects (source code) based on LPCXpresso IDE (it has been optimized in LPCXpresso v7.5.0_254(recommend))
 These are can't build on LPCXpresso v8.x.x. We recommend LPCXpresso v7.5.0_254.
+
 	[Official Download Page](https://nxp.flexnetoperations.com/control/frse/product?child_plneID=730797&cert_num=276240197&ver=ARC)
 	[Direct Download Link](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe) (Windows)
+	
 Firmware source code are two types as follows.
 - Application
 - Bootloader
 
 **The order of compile**
+
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
 3. WIZ550S2E_App or WIZ550S2E_Boot.
