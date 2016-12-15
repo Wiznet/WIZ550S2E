@@ -3,10 +3,11 @@ Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=p
 
 ## Firmware
 These are Firmware projects (source code) based on LPCXpresso IDE (it has been optimized in LPCXpresso v7.5.0_254(recommend)).
+
 These are can't build on LPCXpresso v8.x.x. We recommend LPCXpresso v7.5.0_254.
 
-[Official Download Page](https://nxp.flexnetoperations.com/control/frse/product?child_plneID=730797&cert_num=276240197&ver=ARC).
-[Direct Download Link](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe) (Windows).
+- [Official Download Page](https://nxp.flexnetoperations.com/control/frse/product?child_plneID=730797&cert_num=276240197&ver=ARC).
+- [Direct Download Link](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe) (Windows).
 	
 Firmware source code are two types as follows.
 - Application
@@ -18,7 +19,7 @@ Firmware source code are two types as follows.
 2. wiznet_s2e_wiz550s2e_board.
 3. WIZ550S2E_App or WIZ550S2E_Boot.
 
-[...More detail](http://wizwiki.net/forum/viewtopic.php?f=109&t=3586&p=10892&hilit=LPCXpresso+v7.5.0_254#p10892)
+- [...More detail](http://wizwiki.net/forum/viewtopic.php?f=109&t=3586&p=10892&hilit=LPCXpresso+v7.5.0_254#p10892)
 
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
