@@ -147,3 +147,12 @@ v1.0.2
 - Add function
 	- Check unlink in mixed mode
 	- AT+FDNS = domain name
+
+v1.0.3
+- Fixed bug
+	- AT Command Trigger
+		- Before : AT command is actived regardless of AT command enable.
+		- After : AT command is actived regard of AT command enable.
+- Add function
+	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
+	

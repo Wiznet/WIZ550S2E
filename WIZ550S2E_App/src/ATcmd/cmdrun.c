@@ -100,7 +100,7 @@ void atc_async_cb(uint8_t sock, uint8_t item, int32_t ret)
 		}
 		break;
 	case WATCH_SOCK_TCP_SEND:	DBG("WATCH_SOCK_TCP_SEND");
-		// 블로킹 모드로만 동작함 그러므로 Watch할 필요가 없음
+		// 블로??모드로만 ?�작??그러므�?Watch???�요가 ?�음
 		break;
 	case WATCH_SOCK_CONN_TRY:	DBG("WATCH_SOCK_CONN_TRY");
 		sockbusy[sock] = VAL_FALSE;
@@ -452,7 +452,35 @@ void act_nopen_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
 		ARG_CLEAR(atci.tcmd.arg1);
 	}
 }
+void act_nmode_q(void)
+{
+	cmd_resp(RET_NOT_ALLOWED, VAL_NONE);
+}
+void act_nmode_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
+{
+	S2E_Packet *packet = get_S2E_Packet_pointer();
 
+	if(type == 'S') {
+		packet->network_info[0].working_mode = TCP_SERVER_MODE;
+	} else if(type == 'C') {
+		packet->network_info[0].working_mode = TCP_CLIENT_MODE;
+	} else if(type == 'M') {
+		packet->network_info[0].working_mode = TCP_MIXED_MODE;
+	} else if(type == 'U') {
+		packet->network_info[0].working_mode = UDP_MODE;
+	}
+	packet->network_info[0].local_port = sport;
+
+	packet->network_info[0].remote_ip[0] = dip[0];
+	packet->network_info[0].remote_ip[1] = dip[1];
+	packet->network_info[0].remote_ip[2] = dip[2];
+	packet->network_info[0].remote_ip[3] = dip[3];
+
+	packet->network_info[0].remote_port = dport;
+	save_S2E_Packet_to_eeprom();
+
+	cmd_resp(RET_OK, VAL_NONE);
+}
 void act_nclose(uint8_t sock)
 {
 	int8_t ret;
@@ -676,7 +704,7 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 	atci.recvbuf[len] = 0;
 	recvflag[sock] = VAL_CLEAR;
 
-	if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_IDLE) {	// 디버그용임. 안정되면 간단하게 수정할 것
+	if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_IDLE) {	// ?�버그용?? ?�정?�면 간단?�게 ?�정??�
 		CRITICAL_ERRA("Impossible status - recv from closed sock(%d)", sock);
 	} else if(sockstat[sock] & SOCK_STAT_TCP_MASK) {	// TCP
 		if(sockstat[sock] & SOCK_STAT_CONNECTED)
