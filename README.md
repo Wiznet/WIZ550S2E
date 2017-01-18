@@ -156,3 +156,11 @@ v1.0.3
 - Add function
 	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
 	
+v1.0.4
+- Fixed bug
+	- Time packing problem in UDP mode.
+		- Before : Not work normally after the first time.
+		- After : Work normally
+	- Upper and lower case problems in config Data.
+		- Before : Only uppercase letters work normally.
+		- After : Works in both uppercase and lowercase.

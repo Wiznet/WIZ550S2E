@@ -19,6 +19,10 @@ static int pattern_cnt = 0;
 static int ready_cnt = 0;
 static int pattern_offset = 0;
 
+#ifdef RENEWAL_UDP_PORT
+	static uint16_t udp_port = 5000;
+#endif
+
 uint32_t uart_send_cnt = 0;
 uint32_t uart_recv_cnt = 0;
 uint32_t ether_send_cnt = 0;
@@ -117,6 +121,12 @@ static void ether_to_uart(uint8_t sock)
 
 			if((len > 0) && len <= RingBuffer_GetFree(&txring)) {
 				len = recvfrom(sock, g_recv_buf, sizeof(g_recv_buf), dstip, &dstport);
+#ifdef RENEWAL_UDP_PORT
+				struct __network_info *net = (struct __network_info *)get_S2E_Packet_pointer()->network_info;
+				udp_port = dstport;
+				net->remote_port = udp_port;
+//				printf(" peer port : %d \r\n", udp_port); //for debug
+#endif
 				if(len < 0) {
 					//printf("recvfrom error\r\n");
 					return;
@@ -225,16 +235,19 @@ static void uart_to_ether(uint8_t sock)
 	uart_recv_cnt += len;
 	pattern_offset = 0;
 
-	if(sock_state == SOCK_UDP) {
+	if(sock_state == SOCK_UDP)
+	{
 		uint8_t remote_ip[4];
 		memcpy(remote_ip, net->remote_ip, sizeof(remote_ip));
 		ret = sendto(sock, g_send_buf, len, remote_ip, net->remote_port);
-		if(ret != len) {
-			//printf("sendto error\r\n");
-			return;
-		}
+//		if(ret != len) {
+//			//printf("sendto error - ret : %d  //  len : %d\r\n", ret, len); //for debugging
+//			return;
+//		}
 		ether_send_cnt += len;
-	} else if(sock_state == SOCK_ESTABLISHED) {
+	}
+	else if(sock_state == SOCK_ESTABLISHED)
+	{
 		ret = send(sock, g_send_buf, len);
 		if(ret != len) {
 			//printf("send error\r\n");
@@ -242,7 +255,6 @@ static void uart_to_ether(uint8_t sock)
 		}
 		ether_send_cnt += len;
 	}
-
 	nagle_flag = nagle_time = uart_recv_count = 0;
 }
 
@@ -260,7 +272,7 @@ static void trigger_none_process(uint8_t sock_state)
 		return;
 	}
 
-	if(uart_size_prev == RingBuffer_GetCount(&rxring)) {			// UART ?˜ì‹  ?°ì´?°ê? ?†ìœ¼ë©?
+	if(uart_size_prev == RingBuffer_GetCount(&rxring)) {			// UART ?ï¿½ì‹  ?ï¿½ì´?ï¿½ï¿½? ?ï¿½ìœ¼ï¿½?
 		if(trigger_flag == 0)
 			trigger_flag = 1;
 	} else {
@@ -581,7 +593,7 @@ static void s2e_sockudp_process(uint8_t sock)
 			break;
 
 		case UDP_MODE:
-			/* S2E ?™ì‘ */
+			/* S2E ?ï¿½ì‘ */
 			ether_to_uart(sock);
 			uart_to_ether(sock);
 			break;

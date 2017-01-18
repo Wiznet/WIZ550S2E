@@ -4,9 +4,11 @@
 
 #include <stdint.h>
 
+#define RENEWAL_UDP_PORT    // add by kei
+
 #define MAJOR_VER		1
 #define MINOR_VER		0
-#define MAINTENANCE_VER	3
+#define MAINTENANCE_VER	4
 
 #define SOCK_DATA		0
 #define SOCK_CONFIG		1
