@@ -164,3 +164,9 @@ v1.0.4
 	- Upper and lower case problems in config Data.
 		- Before : Only uppercase letters work normally.
 		- After : Works in both uppercase and lowercase.
+
+v1.1.0
+- ioLibrary Update
+- Dependency Removal (remove "board.h" in "w5500.h")
+- Remove garbage file
+ 

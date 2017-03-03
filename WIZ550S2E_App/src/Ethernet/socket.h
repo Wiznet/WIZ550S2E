@@ -6,6 +6,10 @@
 //! \version 1.0.2
 //! \date 2013/10/21
 //! \par  Revision history
+//!       <2015/02/05> Notice
+//!        The version history is not updated after this point.
+//!        Download the latest version directly from GitHub. Please visit the our GitHub repository for ioLibrary.
+//!        >> https://github.com/Wiznet/ioLibrary_Driver
 //!       <2014/05/01> V1.0.2. Refer to M20140501
 //!         1. Modify the comment : SO_REMAINED -> PACK_REMAINED
 //!         2. Add the comment as zero byte udp data reception in getsockopt(). 
@@ -85,14 +89,14 @@
 
 #define SOCKET                uint8_t  ///< SOCKET type define for legacy driver
 
-#define SOCK_OK               1         ///< Result is OK about socket process.
-#define SOCK_BUSY             -1        ///< Socket is busy on processing the operation. Valid only Non-block IO Mode.
+#define SOCK_OK               1        ///< Result is OK about socket process.
+#define SOCK_BUSY             0        ///< Socket is busy on processing the operation. Valid only Non-block IO Mode.
 #define SOCK_FATAL            -1000    ///< Result is fatal error about socket process.
 
 #define SOCK_ERROR            0        
 #define SOCKERR_SOCKNUM       (SOCK_ERROR - 1)     ///< Invalid socket number
 #define SOCKERR_SOCKOPT       (SOCK_ERROR - 2)     ///< Invalid socket option
-#define SOCKERR_SOCKINIT      (SOCK_ERROR - 3)     ///< Socket is not initialized
+#define SOCKERR_SOCKINIT      (SOCK_ERROR - 3)     ///< Socket is not initialized or SIPR is Zero IP address when Sn_MR_TCP
 #define SOCKERR_SOCKCLOSED    (SOCK_ERROR - 4)     ///< Socket unexpectedly closed.
 #define SOCKERR_SOCKMODE      (SOCK_ERROR - 5)     ///< Invalid socket mode for socket operation.
 #define SOCKERR_SOCKFLAG      (SOCK_ERROR - 6)     ///< Invalid socket flag
@@ -109,16 +113,21 @@
 /*
  * SOCKET FLAG
  */
-#define SF_ETHER_OWN           (Sn_MR_MFEN)        ///< In \ref Sn_MR_MACRAW, Receive only the packet as broadcast, multicast and own packet
-#define SF_IGMP_VER2           (Sn_MR_MC)          ///< In \ref Sn_MR_UDP with \ref SF_MULTI_ENABLE, Select IGMP version 2.   
-#define SF_TCP_NODELAY         (Sn_MR_ND)          ///< In \ref Sn_MR_TCP, Use to nodelayed ack.
-#define SF_MULTI_ENABLE        (Sn_MR_MULTI)       ///< In \ref Sn_MR_UDP, Enable multicast mode.
+#define SF_ETHER_OWN           (Sn_MR_MFEN)        ///< In @ref Sn_MR_MACRAW, Receive only the packet as broadcast, multicast and own packet
+#define SF_IGMP_VER2           (Sn_MR_MC)          ///< In @ref Sn_MR_UDP with \ref SF_MULTI_ENABLE, Select IGMP version 2.   
+#define SF_TCP_NODELAY         (Sn_MR_ND)          ///< In @ref Sn_MR_TCP, Use to nodelayed ack.
+#define SF_MULTI_ENABLE        (Sn_MR_MULTI)       ///< In @ref Sn_MR_UDP, Enable multicast mode.
 
 #if _WIZCHIP_ == 5500
-   #define SF_BROAD_BLOCK         (Sn_MR_BCASTB)   ///< In \ref Sn_MR_UDP or \ref Sn_MR_MACRAW, Block broadcast packet. Valid only in W5500
-   #define SF_MULTI_BLOCK         (Sn_MR_MMB)      ///< In \ref Sn_MR_MACRAW, Block multicast packet. Valid only in W5500
-   #define SF_IPv6_BLOCK          (Sn_MR_MIP6B)    ///< In \ref Sn_MR_MACRAW, Block IPv6 packet. Valid only in W5500
-   #define SF_UNI_BLOCK           (Sn_MR_UCASTB)   ///< In \ref Sn_MR_UDP with \ref SF_MULTI_ENABLE. Valid only in W5500
+   #define SF_BROAD_BLOCK         (Sn_MR_BCASTB)   ///< In @ref Sn_MR_UDP or @ref Sn_MR_MACRAW, Block broadcast packet. Valid only in W5500
+   #define SF_MULTI_BLOCK         (Sn_MR_MMB)      ///< In @ref Sn_MR_MACRAW, Block multicast packet. Valid only in W5500
+   #define SF_IPv6_BLOCK          (Sn_MR_MIP6B)    ///< In @ref Sn_MR_MACRAW, Block IPv6 packet. Valid only in W5500
+   #define SF_UNI_BLOCK           (Sn_MR_UCASTB)   ///< In @ref Sn_MR_UDP with \ref SF_MULTI_ENABLE. Valid only in W5500
+#endif
+
+//A201505 : For W5300
+#if _WIZCHIP_ == 5300
+   #define SF_TCP_ALIGN		     0x02			   ///< Valid only \ref Sn_MR_TCP and W5300, refer to \ref Sn_MR_ALIGN
 #endif
 
 #define SF_IO_NONBLOCK           0x01              ///< Socket nonblock io mode. It used parameter in \ref socket().
@@ -126,9 +135,12 @@
 /*
  * UDP & MACRAW Packet Infomation
  */
-#define PACK_FIRST               0x80              ///< In Non-TCP packet, It indicates to start receiving a packet.
-#define PACK_REMAINED            0x01              ///< In Non-TCP packet, It indicates to remain a packet to be received.
-#define PACK_COMPLETED           0x00              ///< In Non-TCP packet, It indicates to complete to receive a packet.
+#define PACK_FIRST               0x80              ///< In Non-TCP packet, It indicates to start receiving a packet. (When W5300, This flag can be applied)
+#define PACK_REMAINED            0x01              ///< In Non-TCP packet, It indicates to remain a packet to be received. (When W5300, This flag can be applied)
+#define PACK_COMPLETED           0x00              ///< In Non-TCP packet, It indicates to complete to receive a packet. (When W5300, This flag can be applied)
+//A20150601 : For Integrating with W5300
+#define PACK_FIFOBYTE            0x02              ///< Valid only W5300, It indicate to have read already the Sn_RX_FIFOR.
+//
 
 /**
  * @ingroup WIZnet_socket_APIs
@@ -337,7 +349,9 @@ typedef enum
    SIK_RECEIVED      = (1 << 2),    ///< data received
    SIK_TIMEOUT       = (1 << 3),    ///< timeout occurred
    SIK_SENT          = (1 << 4),    ///< send ok
-   SIK_ALL           = 0x1F,        ///< all interrupt
+   //M20150410 : Remove the comma of last member
+   //SIK_ALL           = 0x1F,        ///< all interrupt
+   SIK_ALL           = 0x1F         ///< all interrupt
 }sockint_kind;
 
 /**
@@ -352,8 +366,10 @@ typedef enum
    CS_GET_MAXRXBUF,        ///< get the size of socket buffer allocated in RX memory
    CS_CLR_INTERRUPT,       ///< clear the interrupt of socket with @ref sockint_kind
    CS_GET_INTERRUPT,       ///< get the socket interrupt. refer to @ref sockint_kind
-   CS_SET_INTMASK,         ///< set the interrupt mask of socket with @ref sockint_kind
-   CS_GET_INTMASK          ///< get the masked interrupt of socket. refer to @ref sockint_kind
+#if _WIZCHIP_ > 5100
+   CS_SET_INTMASK,         ///< set the interrupt mask of socket with @ref sockint_kind, Not supported in W5100
+   CS_GET_INTMASK          ///< get the masked interrupt of socket. refer to @ref sockint_kind, Not supported in W5100
+#endif
 }ctlsock_type;
 
 
@@ -364,15 +380,15 @@ typedef enum
 typedef enum
 {
    SO_FLAG,           ///< Valid only in getsockopt(), For set flag of socket refer to <I>flag</I> in @ref socket().
-   SO_TTL,              ///< Set/Get TTL. @ref Sn_TTL  ( @ref setSn_TTL(), @ref getSn_TTL() )
-   SO_TOS,              ///< Set/Get TOS. @ref Sn_TOS  ( @ref setSn_TOS(), @ref getSn_TOS() )
-   SO_MSS,              ///< Set/Get MSS. @ref Sn_MSSR ( @ref setSn_MSSR(), @ref getSn_MSSR() )
-   SO_DESTIP,           ///< Set/Get the destination IP address. @ref Sn_DIPR ( @ref setSn_DIPR(), @ref getSn_DIPR() )
-   SO_DESTPORT,         ///< Set/Get the destination Port number. @ref Sn_DPORT ( @ref setSn_DPORT(), @ref getSn_DPORT() )
+   SO_TTL,              ///< Set TTL. @ref Sn_TTL  ( @ref setSn_TTL(), @ref getSn_TTL() )
+   SO_TOS,              ///< Set TOS. @ref Sn_TOS  ( @ref setSn_TOS(), @ref getSn_TOS() )
+   SO_MSS,              ///< Set MSS. @ref Sn_MSSR ( @ref setSn_MSSR(), @ref getSn_MSSR() )
+   SO_DESTIP,           ///< Set the destination IP address. @ref Sn_DIPR ( @ref setSn_DIPR(), @ref getSn_DIPR() )
+   SO_DESTPORT,         ///< Set the destination Port number. @ref Sn_DPORT ( @ref setSn_DPORT(), @ref getSn_DPORT() )
 #if _WIZCHIP_ != 5100   
-   SO_KEEPALIVESEND,    ///< Valid only in setsockopt. Manually send keep-alive packet in TCP mode
+   SO_KEEPALIVESEND,    ///< Valid only in setsockopt. Manually send keep-alive packet in TCP mode, Not supported in W5100
    #if _WIZCHIP_ > 5200   
-      SO_KEEPALIVEAUTO, ///< Set/Get keep-alive auto transmission timer in TCP mode
+      SO_KEEPALIVEAUTO, ///< Set/Get keep-alive auto transmission timer in TCP mode, Not supported in W5100, W5200
    #endif      
 #endif
    SO_SENDBUF,          ///< Valid only in getsockopt. Get the free data size of Socekt TX buffer. @ref Sn_TX_FSR, @ref getSn_TX_FSR()

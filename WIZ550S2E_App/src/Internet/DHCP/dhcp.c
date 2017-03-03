@@ -51,9 +51,6 @@
 
 #include "socket.h"
 #include "dhcp.h"
-#if 1	// 2014.05.30 sskim
-#include "ConfigData.h"
-#endif
 
 /* If you want to display debug & procssing message, Define _DHCP_DEBUG_ in dhcp.h */
 
@@ -382,16 +379,10 @@ void send_DHCP_DISCOVER(void)
 	pDHCPMSG->OPT[k++] = 0;          // fill zero length of hostname 
 	for(i = 0 ; HOST_NAME[i] != 0; i++)
    	pDHCPMSG->OPT[k++] = HOST_NAME[i];
-#if 0	// 2014.05.29 sskim
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[3];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[4];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[5];
 	pDHCPMSG->OPT[k - (i+3+1)] = i+3; // length of hostname
-#else
-	sprintf((char *)(pDHCPMSG->OPT + k), "%02X%02X%02X", DHCP_CHADDR[3], DHCP_CHADDR[4], DHCP_CHADDR[5]);
-	k += 6;
-	pDHCPMSG->OPT[k - (i+6+1)] = i+6; // length of hostname
-#endif
 
 	pDHCPMSG->OPT[k++] = dhcpParamRequest;
 	pDHCPMSG->OPT[k++] = 0x06;	// length of request
@@ -487,17 +478,11 @@ void send_DHCP_REQUEST(void)
 	pDHCPMSG->OPT[k++] = 0; // length of hostname
 	for(i = 0 ; HOST_NAME[i] != 0; i++)
    	pDHCPMSG->OPT[k++] = HOST_NAME[i];
-#if 0	// 2014.05.29 sskim
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[3];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[4];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[5];
 	pDHCPMSG->OPT[k - (i+3+1)] = i+3; // length of hostname
-#else
-	sprintf((char *)(pDHCPMSG->OPT + k), "%02X%02X%02X", DHCP_CHADDR[3], DHCP_CHADDR[4], DHCP_CHADDR[5]);
-	k += 6;
-	pDHCPMSG->OPT[k - (i+6+1)] = i+6; // length of hostname
-#endif
-
+	
 	pDHCPMSG->OPT[k++] = dhcpParamRequest;
 	pDHCPMSG->OPT[k++] = 0x08;
 	pDHCPMSG->OPT[k++] = subnetMask;
@@ -589,7 +574,7 @@ int8_t parseDHCPMSG(void)
 
 	uint8_t * p;
 	uint8_t * e;
-	uint8_t type = 0;
+	uint8_t type;
 	uint8_t opt_len;
    
    if((len = getSn_RX_RSR(DHCP_SOCKET)) > 0)
@@ -659,6 +644,9 @@ int8_t parseDHCPMSG(void)
    				dhcp_lease_time  = (dhcp_lease_time << 8) + *p++;
    				dhcp_lease_time  = (dhcp_lease_time << 8) + *p++;
    				dhcp_lease_time  = (dhcp_lease_time << 8) + *p++;
+            #ifdef _DHCP_DEBUG_  
+               dhcp_lease_time = 10;
+ 				#endif
    				break;
    			case dhcpServerIdentifier :
    				p++;
@@ -907,7 +895,6 @@ void DHCP_init(uint8_t s, uint8_t * buf)
 {
    uint8_t zeroip[4] = {0,0,0,0};
    getSHAR(DHCP_CHADDR);
-#if 0	// 2014.05.30 sskim
    if((DHCP_CHADDR[0] | DHCP_CHADDR[1]  | DHCP_CHADDR[2] | DHCP_CHADDR[3] | DHCP_CHADDR[4] | DHCP_CHADDR[5]) == 0x00)
    {
       // assing temporary mac address, you should be set SHAR before call this function. 
@@ -919,20 +906,6 @@ void DHCP_init(uint8_t s, uint8_t * buf)
       DHCP_CHADDR[5] = 0x00; 
       setSHAR(DHCP_CHADDR);     
    }
-#else
-   if((DHCP_CHADDR[0] | DHCP_CHADDR[1]  | DHCP_CHADDR[2] | DHCP_CHADDR[3] | DHCP_CHADDR[4] | DHCP_CHADDR[5]) == 0x00)
-   {
-		S2E_Packet *value = get_S2E_Packet_pointer();
-      // assing temporary mac address, you should be set SHAR before call this function. 
-      DHCP_CHADDR[0] = value->network_info_common.mac[0];
-      DHCP_CHADDR[1] = value->network_info_common.mac[1];
-      DHCP_CHADDR[2] = value->network_info_common.mac[2];      
-      DHCP_CHADDR[3] = value->network_info_common.mac[3];
-      DHCP_CHADDR[4] = value->network_info_common.mac[4];
-      DHCP_CHADDR[5] = value->network_info_common.mac[5]; 
-      setSHAR(DHCP_CHADDR);     
-   }
-#endif
 
 	DHCP_SOCKET = s; // SOCK_DHCP
 	pDHCPMSG = (RIP_MSG*)buf;
