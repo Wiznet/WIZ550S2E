@@ -1,19 +1,58 @@
 # WIZ550S2E
-Serial to Ethernet Module based on W5500 & Cortex-M0
+Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
 
 ## Firmware
-These are Firmware projects (source code) based on LPCXpresso IDE.
-Firmware source code.
-- Application
-- Boot
+These are Firmware projects (source code) based on LPCXpresso IDE (it has been optimized in LPCXpresso v7.5.0_254(recommend)).
 
-**the order of compile.**
+These are can't build on LPCXpresso v8.x.x. We recommend LPCXpresso v7.5.0_254.
+
+- [Official Download Page](https://nxp.flexnetoperations.com/control/frse/product?child_plneID=730797&cert_num=276240197&ver=ARC).
+- [Direct Download Link](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe) (Windows).
+	
+Firmware source code are two types as follows.
+- Application
+- Bootloader
+
+**The order of compile**
 
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
-3. WIZ550S2E_App.
+3. WIZ550S2E_App or WIZ550S2E_Boot.
+
+- [...More detail](http://wizwiki.net/forum/viewtopic.php?f=109&t=3586&p=10892&hilit=LPCXpresso+v7.5.0_254#p10892)
 
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
+
+**Firmware download**
+
+In this case there is only just [.hex file.](https://github.com/Wiznet/WIZ550S2E/releases)
+
+If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download), look at the following that : Configuration Tool/FW Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start)
+
+1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.
+<p align="left">
+  <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=500&h=374&tok=390d68&media=products:wiz550s2e:wiz550s2e_fw_up_1.png" />
+</p>
+
+2. HW/TRIG switch off.
+<p align="left">
+  <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=378&tok=d39e60&media=products:wiz550s2e:wiz550s2e_fw_up_2.png" />
+</p>
+
+3. Check LED.
+<p align="left">
+  <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png" />
+</p>
+
+4. Short J5 and push reset switch. 
+<p align="left">
+  <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png" />
+</p>
+
+5. firmware download using [Flash Magic](http://www.flashmagictool.com/).
+<p align="left">
+  <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png" />
+</p>
 
 ## Images
 ### WIZ550S2E Module
@@ -67,7 +106,7 @@ Firmware source code.
 - Status LEDs
 - DC-Jack (for +5V Input Power)
 
-For more details, please refer to [WIZ550S2Eweb Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
+For more details, please refer to [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
 
 ## Configuration Tool
 
@@ -93,3 +132,41 @@ Install JAVA Runtime Environment
 ## Revision History
 v1.0.0
 - First release : Apr. 2015
+
+v1.0.1
+- Fixed Project set
+
+v1.0.2
+- Fixed bug 
+	- In mixed mode
+		- Before : when connecting to the server, the '+' had to be include in the serial data.
+		- After : when serial data is generated directly connecting.
+	- In AT command
+		- Before : at = a t. in other words, ignore space.
+		- After : at != a t. in other words, admitte space.
+- Add function
+	- Check unlink in mixed mode
+	- AT+FDNS = domain name
+
+v1.0.3
+- Fixed bug
+	- AT Command Trigger
+		- Before : AT command is actived regardless of AT command enable.
+		- After : AT command is actived regard of AT command enable.
+- Add function
+	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
+	
+v1.0.4
+- Fixed bug
+	- Time packing problem in UDP mode.
+		- Before : Not work normally after the first time.
+		- After : Work normally
+	- Upper and lower case problems in config Data.
+		- Before : Only uppercase letters work normally.
+		- After : Works in both uppercase and lowercase.
+
+v1.1.0
+- ioLibrary Update
+- Dependency Removal (remove "board.h" in "w5500.h")
+- Remove garbage file
+ 

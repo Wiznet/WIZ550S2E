@@ -3,10 +3,13 @@
 #define __COMMON_H__
 
 #include <stdint.h>
+#include "board.h"
+
+#define RENEWAL_UDP_PORT    // add by kei
 
 #define MAJOR_VER		1
-#define MINOR_VER		0
-#define MAINTENANCE_VER	3
+#define MINOR_VER		1
+#define MAINTENANCE_VER	0
 
 #define SOCK_DATA		0
 #define SOCK_CONFIG		1

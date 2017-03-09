@@ -2,19 +2,23 @@
 //
 //! \file w5500.c
 //! \brief W5500 HAL Interface.
-//! \version 1.0.1
+//! \version 1.0.2
 //! \date 2013/10/21
 //! \par  Revision history
+//!       <2015/02/05> Notice
+//!        The version history is not updated after this point.
+//!        Download the latest version directly from GitHub. Please visit the our GitHub repository for ioLibrary.
+//!        >> https://github.com/Wiznet/ioLibrary_Driver
 //!       <2014/05/01> V1.0.2
 //!         1. Implicit type casting -> Explicit type casting. Refer to M20140501
 //!            Fixed the problem on porting into under 32bit MCU
 //!            Issued by Mathias ClauBen, wizwiki forum ID Think01 and bobh
 //!            Thank for your interesting and serious advices.
-//!       <2013/10/21> 1st Release
 //!       <2013/12/20> V1.0.1
 //!         1. Remove warning
 //!         2. WIZCHIP_READ_BUF WIZCHIP_WRITE_BUF in case _WIZCHIP_IO_MODE_SPI_FDM_
 //!            for loop optimized(removed). refer to M20131220
+//!       <2013/10/21> 1st Release
 //! \author MidnightCow
 //! \copyright
 //!
@@ -55,6 +59,7 @@
 #define _W5500_SPI_FDM_OP_LEN2_     0x02
 #define _W5500_SPI_FDM_OP_LEN4_     0x03
 
+#if   (_WIZCHIP_ == 5500)
 ////////////////////////////////////////////////////
 
 uint8_t  WIZCHIP_READ(uint32_t AddrSel)
@@ -69,7 +74,7 @@ uint8_t  WIZCHIP_READ(uint32_t AddrSel)
 
    if(!WIZCHIP.IF.SPI._read_burst || !WIZCHIP.IF.SPI._write_burst) 	// byte operation
    {
-	   	WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
+	   WIZCHIP.IF.SPI._write_byte((AddrSel & 0x00FF0000) >> 16);
 		WIZCHIP.IF.SPI._write_byte((AddrSel & 0x0000FF00) >>  8);
 		WIZCHIP.IF.SPI._write_byte((AddrSel & 0x000000FF) >>  0);
    }
@@ -259,3 +264,4 @@ void wiz_recv_ignore(uint8_t sn, uint16_t len)
    setSn_RX_RD(sn,ptr);
 }
 
+#endif

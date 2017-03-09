@@ -7,9 +7,9 @@
 #include "DHCP/dhcp.h"
 #include "DNS/dns.h"
 
-uint8_t nagle_flag = 0;
-uint32_t nagle_time = 0;
-uint32_t uart_recv_count = 0;
+volatile uint8_t nagle_flag = 0;
+volatile uint32_t nagle_time = 0;
+volatile uint32_t uart_recv_count = 0;
 
 uint8_t reconn_flag = 0;			/* 0 : connect / 1 : NONE */
 uint32_t reconn_time = 0;

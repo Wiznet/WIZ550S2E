@@ -4,9 +4,9 @@
 
 #define TICKRATE_HZ1    (1000)	/* 1000 ticks per second */
 
-extern uint8_t nagle_flag;
-extern uint32_t nagle_time;
-extern uint32_t uart_recv_count;
+extern volatile uint8_t nagle_flag;
+extern volatile uint32_t nagle_time;
+extern volatile uint32_t uart_recv_count;
 
 extern uint8_t reconn_flag;	
 extern uint32_t reconn_time;

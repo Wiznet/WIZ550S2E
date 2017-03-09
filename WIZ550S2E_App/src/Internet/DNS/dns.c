@@ -352,7 +352,7 @@ int8_t parseDNSMSG(struct dhdr * pdhdr, uint8_t * pbuf, uint8_t * ip_from_dns)
 	if (tmp & 0x0100) pdhdr->rd = 1;
 	if (tmp & 0x0080) pdhdr->ra = 1;
 
-	pdhdr->rcode = tmp & 0x0f;
+	pdhdr->rcode = tmp & 0xf;
 	pdhdr->qdcount = get16(&msg[4]);
 	pdhdr->ancount = get16(&msg[6]);
 	pdhdr->nscount = get16(&msg[8]);
@@ -366,6 +366,9 @@ int8_t parseDNSMSG(struct dhdr * pdhdr, uint8_t * pbuf, uint8_t * ip_from_dns)
 	for (i = 0; i < pdhdr->qdcount; i++)
 	{
 		cp = dns_question(msg, cp);
+   #ifdef _DNS_DEUBG_
+      printf("MAX_DOMAIN_NAME is too small, it should be redfine in dns.h"
+   #endif
 		if(!cp) return -1;
 	}
 
@@ -373,6 +376,9 @@ int8_t parseDNSMSG(struct dhdr * pdhdr, uint8_t * pbuf, uint8_t * ip_from_dns)
 	for (i = 0; i < pdhdr->ancount; i++)
 	{
 		cp = dns_answer(msg, cp, ip_from_dns);
+   #ifdef _DNS_DEUBG_
+      printf("MAX_DOMAIN_NAME is too small, it should be redfine in dns.h"
+   #endif
 		if(!cp) return -1;
 	}
 
@@ -495,66 +501,52 @@ void DNS_init(uint8_t s, uint8_t * buf)
 /* DNS CLIENT RUN */
 int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
 {
-	int8_t ret = 0;
+	int8_t ret;
 	struct dhdr dhp;
 	uint8_t ip[4];
 	uint16_t len, port;
 	int8_t ret_check_timeout;
-	uint8_t tmp;
    
-	// Socket open
-	if(getSn_SR(DNS_SOCKET) == SOCK_CLOSED) {
-		socket(DNS_SOCKET, Sn_MR_UDP, 7777, SF_IO_NONBLOCK);
+   // Socket open
+   socket(DNS_SOCKET, Sn_MR_UDP, 0, 0);
 
 #ifdef _DNS_DEBUG_
-		printf("> DNS Query to DNS Server : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
-		printf("> Domain : %s\r\n", name);
+	printf("> DNS Query to DNS Server : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
 #endif
+   
+	len = dns_makequery(0, (char *)name, pDNSMSG, MAX_DNS_BUF_SIZE);
+	sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
 
-		len = dns_makequery(0, (char *)name, pDNSMSG, MAX_DNS_BUF_SIZE);
-		sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
-	}
+	while (1)
+	{
+		if ((len = getSn_RX_RSR(DNS_SOCKET)) > 0)
+		{
+			if (len > MAX_DNS_BUF_SIZE) len = MAX_DNS_BUF_SIZE;
+			len = recvfrom(DNS_SOCKET, pDNSMSG, len, ip, &port);
+      #ifdef _DNS_DEBUG_
+	      printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
+      #endif
+         ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
+			break;
+		}
+		// Check Timeout
+		ret_check_timeout = check_DNS_timeout();
+		if (ret_check_timeout < 0) {
 
-	tmp = getSn_IR(DNS_SOCKET);
-	if(tmp & Sn_IR_SENDOK)
-	{
-		setSn_IR(DNS_SOCKET, Sn_IR_SENDOK);
-	}
-	else if(tmp & Sn_IR_TIMEOUT)
-	{
-		setSn_IR(DNS_SOCKET, Sn_IR_TIMEOUT);
-	}
-
-	if ((len = getSn_RX_RSR(DNS_SOCKET)) > 0)
-	{
-		if (len > MAX_DNS_BUF_SIZE) len = MAX_DNS_BUF_SIZE;
-		len = recvfrom(DNS_SOCKET, pDNSMSG, len, ip, &port);
 #ifdef _DNS_DEBUG_
-		printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
+			printf("> DNS Server is not responding : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
 #endif
-		ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
-		if(ret == 1) {
-			close(DNS_SOCKET);
+			return 0; // timeout occurred
+		}
+		else if (ret_check_timeout == 0) {
+
+#ifdef _DNS_DEBUG_
+			printf("> DNS Timeout\r\n");
+#endif
+			sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
 		}
 	}
-	// Check Timeout
-	ret_check_timeout = check_DNS_timeout();
-	if (ret_check_timeout < 0) {
-
-#ifdef _DNS_DEBUG_
-		printf("> DNS Server is not responding : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
-#endif
-		ret = -1; // timeout occurred
-		close(DNS_SOCKET);
-	}
-	else if (ret_check_timeout == 0) {
-
-#ifdef _DNS_DEBUG_
-		printf("> DNS Timeout\r\n");
-#endif
-		sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
-	}
-
+	close(DNS_SOCKET);
 	// Return value
 	// 0 > :  failed / 1 - success
 	return ret;
