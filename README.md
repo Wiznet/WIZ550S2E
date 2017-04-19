@@ -169,4 +169,6 @@ v1.1.0
 - ioLibrary Update
 - Dependency Removal (remove "board.h" in "w5500.h")
 - Remove garbage file
- 
+
+v1.1.1
+- Add inactivity time function in Server/Mixed Mode
