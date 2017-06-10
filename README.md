@@ -130,19 +130,19 @@ Install JAVA Runtime Environment
 ![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
 
 ## Revision History
-v1.1.2
+### v1.1.2
 - Fixed recevied data loss(During trans to serial) problem in AT Mode
-  - Limit max size(1000byte) of receive data from ethernet.
+	- Limit max size(1000byte) of receive data from ethernet.
 
-v1.1.1
+### v1.1.1
 - Add inactivity time function in Server/Mixed Mode
 
-v1.1.0
+### v1.1.0
 - ioLibrary Update
 - Dependency Removal (remove "board.h" in "w5500.h")
 - Remove garbage file
 
-v1.0.4
+### v1.0.4
 - Fixed bug
 	- Time packing problem in UDP mode.
 		- Before : Not work normally after the first time.
@@ -151,7 +151,7 @@ v1.0.4
 		- Before : Only uppercase letters work normally.
 		- After : Works in both uppercase and lowercase.
 
-v1.0.3
+### v1.0.3
 - Fixed bug
 	- AT Command Trigger
 		- Before : AT command is actived regardless of AT command enable.
@@ -159,7 +159,7 @@ v1.0.3
 - Add function
 	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
 
-v1.0.2
+### v1.0.2
 - Fixed bug 
 	- In mixed mode
 		- Before : when connecting to the server, the '+' had to be include in the serial data.
@@ -167,12 +167,12 @@ v1.0.2
 	- In AT command
 		- Before : at = a t. in other words, ignore space.
 		- After : at != a t. in other words, admitte space.
-- Add function
+### - Add function
 	- Check unlink in mixed mode
 	- AT+FDNS = domain name
 
-v1.0.1
+### v1.0.1
 - Fixed Project set
 
-v1.0.0
+### v1.0.0
 - First release : Apr. 2015
