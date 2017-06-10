@@ -2,12 +2,9 @@
 Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
 
 ## Firmware
-These are Firmware projects (source code) based on LPCXpresso IDE (it has been optimized in LPCXpresso v7.5.0_254(recommend)).
+These are Firmware projects (source code) based on [LPCXpresso](http://www.nxp.com/products/microcontrollers-and-processors/arm-processors/lpc-cortex-m-mcus/lpc1100-cortex-m0-plus-m0/lpcxpresso-ide-v8.2.2:LPCXPRESSO) IDE or [MCUXpresso](http://www.nxp.com/products/software-and-tools/run-time-software/mcuxpresso-software-and-tools/mcuxpresso-integrated-development-environment-ide:MCUXpresso-IDE).
 
-These are can't build on LPCXpresso v8.x.x. We recommend LPCXpresso v7.5.0_254.
-
-- [Official Download Page](https://nxp.flexnetoperations.com/control/frse/product?child_plneID=730797&cert_num=276240197&ver=ARC).
-- [Direct Download Link](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe) (Windows).
+- [Direct Download Link for LPCXpresso7.5.0_254 for Windows](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe)
 	
 Firmware source code are two types as follows.
 - Application
