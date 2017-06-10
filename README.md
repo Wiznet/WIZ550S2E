@@ -167,7 +167,7 @@ Install JAVA Runtime Environment
 	- In AT command
 		- Before : at = a t. in other words, ignore space.
 		- After : at != a t. in other words, admitte space.
-### - Add function
+- Add function
 	- Check unlink in mixed mode
 	- AT+FDNS = domain name
 
