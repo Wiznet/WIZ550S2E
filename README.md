@@ -1,7 +1,9 @@
 # WIZ550S2E
+
 Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
 
 ## Firmware
+
 These are Firmware projects (source code) based on [LPCXpresso](http://www.nxp.com/products/microcontrollers-and-processors/arm-processors/lpc-cortex-m-mcus/lpc1100-cortex-m0-plus-m0/lpcxpresso-ide-v8.2.2:LPCXPRESSO) IDE or [MCUXpresso](http://www.nxp.com/products/software-and-tools/run-time-software/mcuxpresso-software-and-tools/mcuxpresso-integrated-development-environment-ide:MCUXpresso-IDE).
 
 - [Direct Download Link for LPCXpresso7.5.0_254 for Windows](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe)
@@ -51,12 +53,14 @@ If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=product
 </p>
 
 ## Images
+
 ### WIZ550S2E Module
 
 <!-- WIZ550S2E pic -->
 ![WIZ550S2E](http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:wiz550s2e_pin.jpg "WIZ550S2E")
 
 #### Features & Benefits & Hardware Specification
+
 - Serial to Ethernet Module based on TCP/IP Controller W5500 & Cortex-M0(MCU LPC11E36FHN33) 
 - RJ-45 mounted, Pin-header type module
 - Serial signals : TXD, RXD, RTS, CTS, GND
@@ -71,6 +75,7 @@ If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=product
 - 2.54mm Header x2
 
 ### WIZ550S2E-232 Interface Board
+
 <!-- WIZ550S2E-232 Interface Board pic -->
 <p align="center">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:rs232if_pin_20140729.jpg" />
@@ -78,7 +83,9 @@ If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=product
 <p align="center">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_wiz550s2e-232-evb.png" />
 </p>
+
 #### Features
+
 - Line Driver SP3232EBEY
 - System Reset Switch
 - Factory Reset Switch
@@ -87,6 +94,7 @@ If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=product
 - DC-Jack (for +5V Input Power)
 
 ### WIZ550S2E-485/422 Interface Board
+
 <!-- WIZ550S2E-232 Interface Board pic -->
 <p align="center">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:rs485-422if_pin_20140729.jpg" />
@@ -94,7 +102,9 @@ If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=product
 <p align="center">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?cache=&media=products:wiz550s2e:wiz550s2eds:%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_wiz550s2e-485-evb.png" />
 </p>
+
 #### Features
+
 - Line Driver SP3485EN
 - System Reset Switch
 - Factory Reset Switch
@@ -117,7 +127,7 @@ Install JAVA Runtime Environment
 4. When you run the Terminal, type the "java -version" command, the following message is displayed.
 ![2](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563628&w=500&h=100&tok=1cadd9&media=products:wiz550s2e:2.png "2")
 5. [WIZ550S2E wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download).
-6. Configuration Tool for WIZ550S2E download.
+6. Configuration Tool for WIZ550S2E download.                                     
 ![3](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=375&tok=02960c&media=products:wiz550s2e:3.png "3")
 7. Then Unzipped the downloaded zip file. Excutable jar file is created.
 8. Excute file.
@@ -126,22 +136,32 @@ Install JAVA Runtime Environment
 ![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
 
 ## Revision History
+
+### v1.1.4
+
+- Fixed Problems receiving data in AT Mode
+
 ### v1.1.3
+
 - Fixed UDP Send Fail in AT Mode
 
 ### v1.1.2
+
 - Fixed recevied data loss(During trans to serial) problem in AT Mode
 	- Limit max size(1000byte) of receive data from ethernet.
 
 ### v1.1.1
+
 - Add inactivity time function in Server/Mixed Mode
 
 ### v1.1.0
+
 - ioLibrary Update
 - Dependency Removal (remove "board.h" in "w5500.h")
 - Remove garbage file
 
 ### v1.0.4
+
 - Fixed bug
 	- Time packing problem in UDP mode.
 		- Before : Not work normally after the first time.
@@ -151,6 +171,7 @@ Install JAVA Runtime Environment
 		- After : Works in both uppercase and lowercase.
 
 ### v1.0.3
+
 - Fixed bug
 	- AT Command Trigger
 		- Before : AT command is actived regardless of AT command enable.
@@ -159,6 +180,7 @@ Install JAVA Runtime Environment
 	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
 
 ### v1.0.2
+
 - Fixed bug 
 	- In mixed mode
 		- Before : when connecting to the server, the '+' had to be include in the serial data.
@@ -171,7 +193,9 @@ Install JAVA Runtime Environment
 	- AT+FDNS = domain name
 
 ### v1.0.1
+
 - Fixed Project set
 
 ### v1.0.0
+
 - First release : Apr. 2015
