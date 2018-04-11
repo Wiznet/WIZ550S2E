@@ -15,8 +15,7 @@ Firmware source code are two types as follows.
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
 3. WIZ550S2E_App or WIZ550S2E_Boot.
-
-- [...More detail](http://wizwiki.net/forum/viewtopic.php?f=109&t=3586&p=10892&hilit=LPCXpresso+v7.5.0_254#p10892)
+4. [More details](https://forum.wiznet.io/t/topic/2538)
 
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
@@ -127,6 +126,9 @@ Install JAVA Runtime Environment
 ![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
 
 ## Revision History
+### v1.1.3
+- Fixed UDP Send Fail in AT Mode
+
 ### v1.1.2
 - Fixed recevied data loss(During trans to serial) problem in AT Mode
 	- Limit max size(1000byte) of receive data from ethernet.
