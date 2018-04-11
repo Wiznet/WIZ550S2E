@@ -15,7 +15,7 @@
 static watch_cbfunc watch_cb[TOTAL_SOCK_NUM] = {0,};
 static uint8_t watch_sock[TOTAL_SOCK_NUM] = {0,};
 
-
+int32_t checkAtcUdpSendStatus = 0;
 /**
  * Assign a callback function to a socket.
  * When @ref sockwatch_run function detected a event, \n
@@ -219,16 +219,11 @@ do { \
 			// 블로킹 모드로만 동작함 그러므로 Watch할 필요가 없음
 		}
 		if(watch_sock[i] & WATCH_SOCK_UDP_SEND) {
-			ctlsocket(i, CS_GET_INTERRUPT, (uint8_t*)&ret);
-			if((uint8_t)ret & Sn_IR_SENDOK) {
-				uint8_t set = (uint8_t)Sn_IR_SENDOK;
-				ctlsocket(i, CS_CLR_INTERRUPT, &set);
-				WCF_HANDLE(WATCH_SOCK_UDP_SEND, RET_OK);
-			}
-			else if((uint8_t)ret & Sn_IR_TIMEOUT) {
-				uint8_t set = Sn_IR_TIMEOUT;
-				ctlsocket(i, CS_CLR_INTERRUPT, &set);
+			if(checkAtcUdpSendStatus < 0) {
 				WCF_HANDLE(WATCH_SOCK_UDP_SEND, RET_NOK);
+			}
+			else {
+				WCF_HANDLE(WATCH_SOCK_UDP_SEND, RET_OK);
 			}
 		}
 	}

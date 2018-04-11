@@ -53,6 +53,8 @@ static uint8_t  udpip[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO][4] = {{0,},};	// to store 
 static uint16_t udpport[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO]  = {0,};	// to store UDP Destination port
 static int8_t   recvflag[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO] = {0,};	// for recv check
 
+extern int32_t checkAtcUdpSendStatus;
+
 static int8_t sock_get(int8_t initval, uint16_t srcport)
 {
 	int8_t i;
@@ -392,6 +394,7 @@ void act_nopen_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
 		MAKE_TCMD_DIGIT(atci.tcmd.arg1, sock);
 		cmd_resp(RET_OK, VAL_NONE);
 		ARG_CLEAR(atci.tcmd.arg1);
+		checkAtcUdpSendStatus = 0;
 		return;
 	}
 	else {	// 'A' mode
@@ -595,7 +598,7 @@ void act_nsend(uint8_t sock, int8_t *buf, uint16_t len, uint8_t *dip, uint16_t *
 		memcpy(remote_ip, dip, 4);
 		remote_port = *dport;
 
-		ret = sendto(sock, (uint8_t *)buf, len, remote_ip, remote_port);
+		checkAtcUdpSendStatus = ret = sendto(sock, (uint8_t *)buf, len, remote_ip, remote_port);
 /*
 		if(ret == SOCK_BUSY) {
 			getsockopt(sock, SO_SENDBUF, &availlen);
