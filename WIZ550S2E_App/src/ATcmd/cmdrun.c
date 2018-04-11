@@ -53,6 +53,8 @@ static uint8_t  udpip[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO][4] = {{0,},};	// to store 
 static uint16_t udpport[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO]  = {0,};	// to store UDP Destination port
 static int8_t   recvflag[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO] = {0,};	// for recv check
 
+extern int32_t checkAtcUdpSendStatus;
+
 static int8_t sock_get(int8_t initval, uint16_t srcport)
 {
 	int8_t i;
@@ -100,7 +102,7 @@ void atc_async_cb(uint8_t sock, uint8_t item, int32_t ret)
 		}
 		break;
 	case WATCH_SOCK_TCP_SEND:	DBG("WATCH_SOCK_TCP_SEND");
-		// 블로??모드로만 ?�작??그러므�?Watch???�요가 ?�음
+		// 블로??모드로만 ?�작??그러므�?Watch???�요가 ?�음
 		break;
 	case WATCH_SOCK_CONN_TRY:	DBG("WATCH_SOCK_CONN_TRY");
 		sockbusy[sock] = VAL_FALSE;
@@ -392,6 +394,7 @@ void act_nopen_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
 		MAKE_TCMD_DIGIT(atci.tcmd.arg1, sock);
 		cmd_resp(RET_OK, VAL_NONE);
 		ARG_CLEAR(atci.tcmd.arg1);
+		checkAtcUdpSendStatus = 0;
 		return;
 	}
 	else {	// 'A' mode
@@ -595,7 +598,7 @@ void act_nsend(uint8_t sock, int8_t *buf, uint16_t len, uint8_t *dip, uint16_t *
 		memcpy(remote_ip, dip, 4);
 		remote_port = *dport;
 
-		ret = sendto(sock, (uint8_t *)buf, len, remote_ip, remote_port);
+		checkAtcUdpSendStatus = ret = sendto(sock, (uint8_t *)buf, len, remote_ip, remote_port);
 /*
 		if(ret == SOCK_BUSY) {
 			getsockopt(sock, SO_SENDBUF, &availlen);
@@ -620,6 +623,8 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 	uint16_t dstport;
 	int32_t len=0, offset=0;
 	uint16_t recvsize;
+
+	if(maxlen > 1000) maxlen = 1000; // limit max size of receive data from ethernet. (20170525) 
 
 	if(sock == VAL_NONE) {	DBG("sock==NONE");
 		for(i=ATC_SOCK_NUM_START; i<=ATC_SOCK_NUM_END; i++) {
@@ -653,7 +658,9 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 			ret = RET_NO_DATA;
 			goto FAIL_RET;
 		}
+		//printf("Socket's RECV SIZE : %d\r\n", recvsize);
 		len = recv(sock, (uint8_t*)atci.recvbuf, maxlen);			//DBGA("TCPdbg---m(%d)l(%d)f(%d)", maxlen, len, GetSocketRxRecvBufferSize(sock));
+		//printf("RECV Length : %d, %d\r\n", len, maxlen);
 	} else {									// UDP
 		uint16_t bufleft = maxlen;
 
@@ -704,7 +711,7 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 	atci.recvbuf[len] = 0;
 	recvflag[sock] = VAL_CLEAR;
 
-	if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_IDLE) {	// ?�버그용?? ?�정?�면 간단?�게 ?�정??�
+	if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_IDLE) {	// ?�버그용?? ?�정?�면 간단?�게 ?�정??�
 		CRITICAL_ERRA("Impossible status - recv from closed sock(%d)", sock);
 	} else if(sockstat[sock] & SOCK_STAT_TCP_MASK) {	// TCP
 		if(sockstat[sock] & SOCK_STAT_CONNECTED)
@@ -723,8 +730,15 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 	ARG_CLEAR(atci.tcmd.arg2);
 	ARG_CLEAR(atci.tcmd.arg3);
 
+#if 1 // added by kei for resolve RECV data loss issue. (20170525)
+	uint32_t send_len = 0;
+	do{
+		send_len += UART_write(&atci.recvbuf[send_len], len-send_len);
+	}while(len-send_len);
+#else
 	UART_write(atci.recvbuf, len);
 	UART_write("\r\n", 2);
+#endif
 
 	return;
 

@@ -2,12 +2,9 @@
 Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
 
 ## Firmware
-These are Firmware projects (source code) based on LPCXpresso IDE (it has been optimized in LPCXpresso v7.5.0_254(recommend)).
+These are Firmware projects (source code) based on [LPCXpresso](http://www.nxp.com/products/microcontrollers-and-processors/arm-processors/lpc-cortex-m-mcus/lpc1100-cortex-m0-plus-m0/lpcxpresso-ide-v8.2.2:LPCXPRESSO) IDE or [MCUXpresso](http://www.nxp.com/products/software-and-tools/run-time-software/mcuxpresso-software-and-tools/mcuxpresso-integrated-development-environment-ide:MCUXpresso-IDE).
 
-These are can't build on LPCXpresso v8.x.x. We recommend LPCXpresso v7.5.0_254.
-
-- [Official Download Page](https://nxp.flexnetoperations.com/control/frse/product?child_plneID=730797&cert_num=276240197&ver=ARC).
-- [Direct Download Link](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe) (Windows).
+- [Direct Download Link for LPCXpresso7.5.0_254 for Windows](https://s3.amazonaws.com/LPCXpresso7/LPCXpresso_7.5.0_254.exe)
 	
 Firmware source code are two types as follows.
 - Application
@@ -130,13 +127,36 @@ Install JAVA Runtime Environment
 ![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
 
 ## Revision History
-v1.0.0
-- First release : Apr. 2015
+### v1.1.2
+- Fixed recevied data loss(During trans to serial) problem in AT Mode
+	- Limit max size(1000byte) of receive data from ethernet.
 
-v1.0.1
-- Fixed Project set
+### v1.1.1
+- Add inactivity time function in Server/Mixed Mode
 
-v1.0.2
+### v1.1.0
+- ioLibrary Update
+- Dependency Removal (remove "board.h" in "w5500.h")
+- Remove garbage file
+
+### v1.0.4
+- Fixed bug
+	- Time packing problem in UDP mode.
+		- Before : Not work normally after the first time.
+		- After : Work normally
+	- Upper and lower case problems in config Data.
+		- Before : Only uppercase letters work normally.
+		- After : Works in both uppercase and lowercase.
+
+### v1.0.3
+- Fixed bug
+	- AT Command Trigger
+		- Before : AT command is actived regardless of AT command enable.
+		- After : AT command is actived regard of AT command enable.
+- Add function
+	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
+
+### v1.0.2
 - Fixed bug 
 	- In mixed mode
 		- Before : when connecting to the server, the '+' had to be include in the serial data.
@@ -148,27 +168,8 @@ v1.0.2
 	- Check unlink in mixed mode
 	- AT+FDNS = domain name
 
-v1.0.3
-- Fixed bug
-	- AT Command Trigger
-		- Before : AT command is actived regardless of AT command enable.
-		- After : AT command is actived regard of AT command enable.
-- Add function
-	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
-	
-v1.0.4
-- Fixed bug
-	- Time packing problem in UDP mode.
-		- Before : Not work normally after the first time.
-		- After : Work normally
-	- Upper and lower case problems in config Data.
-		- Before : Only uppercase letters work normally.
-		- After : Works in both uppercase and lowercase.
+### v1.0.1
+- Fixed Project set
 
-v1.1.0
-- ioLibrary Update
-- Dependency Removal (remove "board.h" in "w5500.h")
-- Remove garbage file
-
-v1.1.1
-- Add inactivity time function in Server/Mixed Mode
+### v1.0.0
+- First release : Apr. 2015
