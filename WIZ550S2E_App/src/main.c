@@ -141,7 +141,7 @@ int main(void)
 		}
 	}
 
-	atc_init(&rxring, &txring);
+	atc_init();
 
 	op_mode = OP_DATA;
 	while (1) {
