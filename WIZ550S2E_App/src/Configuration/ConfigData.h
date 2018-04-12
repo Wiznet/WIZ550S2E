@@ -15,6 +15,8 @@
 #define TCP_SERVER_MODE		1
 #define TCP_MIXED_MODE		2
 #define UDP_MODE			3
+#define PASS_LEN 			10
+#define NAME_LEN 			25
 
 enum baud {
 	baud_300 = 300,
@@ -92,8 +94,8 @@ struct __serial_info {
 } __attribute__((packed));
 
 struct __options {
-	char pw_setting[10];
-	char pw_connect[10];
+	char pw_setting[PASS_LEN];
+	char pw_connect[PASS_LEN];
 
 	uint8_t dhcp_use;
 
@@ -108,7 +110,7 @@ struct __options {
 typedef struct __S2E_Packet {
 	uint16_t packet_size;
 	uint8_t module_type[3]; // 모듈의 종류별로 코드를 부여하고 이를 사용한다.
-	uint8_t module_name[25];
+	uint8_t module_name[NAME_LEN];
 	uint8_t fw_ver[3];			// 10진수. Major Version . Minor Version . Maintenance Version 버전으로 나뉨
 	struct __network_info_common network_info_common;
 	struct __network_info network_info[1];	// 여러개 소켓을 사용할 경우

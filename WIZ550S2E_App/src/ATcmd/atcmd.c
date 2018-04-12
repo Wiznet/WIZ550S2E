@@ -60,7 +60,6 @@ static void hdl_nauto(void);
 static void hdl_nclose(void);
 static void hdl_nsend(void);
 static void hdl_nsock(void);
-static void hdl_nmode(void);
 
 static void hdl_mset(void);
 static void hdl_mstat(void);
@@ -68,6 +67,9 @@ static void hdl_musart(void);
 static void hdl_mdata(void);
 static void hdl_msave(void);
 static void hdl_mrst(void);
+static void hdl_mmode(void);
+static void hdl_mpass(void);
+static void hdl_mname(void);
 
 static void hdl_fdns(void);
 static void hdl_estat(void);
@@ -95,7 +97,6 @@ const struct at_command g_cmd_table[] =
 	{ "NCLOSE",		hdl_nclose, 	NULL, NULL },
 	{ "NSEND",		hdl_nsend,	 	NULL, NULL },
 	{ "NSOCK",		hdl_nsock,	 	NULL, NULL },
-	{ "NMODE",		hdl_nmode,	 	NULL, NULL },
 
 	{ "MSET",		hdl_mset,	 	NULL, NULL },
 	{ "MSTAT",		hdl_mstat,	 	NULL, NULL },
@@ -103,6 +104,10 @@ const struct at_command g_cmd_table[] =
 	{ "MDATA",		hdl_mdata,	 	NULL, NULL },
 	{ "MSAVE",		hdl_msave,	 	NULL, NULL },
 	{ "MRST",		hdl_mrst,	 	NULL, NULL },
+	{ "MMODE",		hdl_mmode,	 	NULL, NULL },
+	{ "MPASS",		hdl_mpass,	 	NULL, NULL },
+	{ "MNAME",		hdl_mname,	 	NULL, NULL },
+
 	{ "FDNS",		hdl_fdns,	 	NULL, NULL },
 
 	{ NULL, NULL, NULL, NULL }	// Should be last item
@@ -145,7 +150,8 @@ void atc_init()
  */
 void atc_run(void)
 {
-	int8_t ret, recv_char;
+	int8_t ret;
+	uint8_t recv_char;
 	static uint8_t buflen = 0;
 
 	if(UART_read(&recv_char, 1) <= 0) return; // ?…ë ¥ ê°??†ëŠ” ê²½ìš°		printf("RECV: 0x%x\r\n", recv_char);
@@ -407,25 +413,25 @@ void cmd_resp(int8_t retval, int8_t idval)
 			idx += len;
 		}
 		termbuf[idx++] = ',';
-#define CMD_SWT_DEF(errval_v) termbuf[idx++] = errval_v; break;
-#define CMD_SWT_EXT(base_v, errval_v) termbuf[idx++]=base_v;termbuf[idx++] = errval_v; break;
+#define CMD_SWT_DEF(errval_v) termbuf[idx++] = errval_v;
+#define CMD_SWT_EXT(base_v, errval_v) termbuf[idx++]=base_v;termbuf[idx++] = errval_v;
 		switch(retval) {
-		case RET_UNSPECIFIED: CMD_SWT_DEF(ERRVAL_UNSPECIFIED);
-		case RET_WRONG_OP: CMD_SWT_DEF(ERRVAL_WRONG_OP);
-		case RET_WRONG_SIGN: CMD_SWT_DEF(ERRVAL_WRONG_SIGN);
-		case RET_WRONG_ARG: CMD_SWT_DEF(ERRVAL_WRONG_ARG);
-		case RET_RANGE_OUT: CMD_SWT_DEF(ERRVAL_RANGE_OUT);
-		case RET_DISABLED: CMD_SWT_DEF(ERRVAL_DISABLED);
-		case RET_NOT_ALLOWED: CMD_SWT_DEF(ERRVAL_NOT_ALLOWED);
-		case RET_BUSY: CMD_SWT_DEF(ERRVAL_BUSY);
-		case RET_TIMEOUT: CMD_SWT_DEF(ERRVAL_TIMEOUT);
-		case RET_NO_SOCK: CMD_SWT_EXT('1', ERRVAL_NO_SOCK);
-		case RET_SOCK_CLS: CMD_SWT_EXT('1', ERRVAL_SOCK_CLS);
-		case RET_USING_PORT: CMD_SWT_EXT('1', ERRVAL_USING_PORT);
-		case RET_NOT_CONN: CMD_SWT_EXT('1', ERRVAL_NOT_CONN);
-		case RET_WRONG_ADDR: CMD_SWT_EXT('1', ERRVAL_WRONG_ADDR);
-		case RET_NO_DATA: CMD_SWT_EXT('1', ERRVAL_NO_DATA);
-		case RET_NO_FREEMEM: CMD_SWT_EXT('2', ERRVAL_NO_FREEMEM);
+		case RET_UNSPECIFIED: CMD_SWT_DEF(ERRVAL_UNSPECIFIED); break;
+		case RET_WRONG_OP: CMD_SWT_DEF(ERRVAL_WRONG_OP); break;
+		case RET_WRONG_SIGN: CMD_SWT_DEF(ERRVAL_WRONG_SIGN); break;
+		case RET_WRONG_ARG: CMD_SWT_DEF(ERRVAL_WRONG_ARG); break;
+		case RET_RANGE_OUT: CMD_SWT_DEF(ERRVAL_RANGE_OUT); break;
+		case RET_DISABLED: CMD_SWT_DEF(ERRVAL_DISABLED); break;
+		case RET_NOT_ALLOWED: CMD_SWT_DEF(ERRVAL_NOT_ALLOWED); break;
+		case RET_BUSY: CMD_SWT_DEF(ERRVAL_BUSY); break;
+		case RET_TIMEOUT: CMD_SWT_DEF(ERRVAL_TIMEOUT); break;
+		case RET_NO_SOCK: CMD_SWT_EXT('1', ERRVAL_NO_SOCK); break;
+		case RET_SOCK_CLS: CMD_SWT_EXT('1', ERRVAL_SOCK_CLS); break;
+		case RET_USING_PORT: CMD_SWT_EXT('1', ERRVAL_USING_PORT); break;
+		case RET_NOT_CONN: CMD_SWT_EXT('1', ERRVAL_NOT_CONN); break;
+		case RET_WRONG_ADDR: CMD_SWT_EXT('1', ERRVAL_WRONG_ADDR); break;
+		case RET_NO_DATA: CMD_SWT_EXT('1', ERRVAL_NO_DATA); break;
+		case RET_NO_FREEMEM: CMD_SWT_EXT('2', ERRVAL_NO_FREEMEM); break;
 		default:termbuf[idx++] = '0';break;
 		}
 	}
@@ -605,107 +611,8 @@ static void hdl_nopen(void)
 	}
 	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
 }
-static void hdl_nmode(void)
-{
-	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP
-	uint8_t DstIP[4], *dip = NULL;
-	uint16_t SrcPort, DstPort = 0;
 
-	if(atci.tcmd.sign == CMD_SIGN_NONE)
-	{
-		atci.tcmd.sign = CMD_SIGN_QUEST;
-	}
-	if(atci.tcmd.sign == CMD_SIGN_QUEST)
-	{
-		CMD_CLEAR();
-		act_nmode_q();
-	}
-	else if(atci.tcmd.sign == CMD_SIGN_INDIV)
-	{
-		RESP_CR(RET_WRONG_SIGN);
-	}
-	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
-	{
-		if(CMP_CHAR_4(atci.tcmd.arg1, 'S', 'C', 'M', 'U'))
-		{
-			RESP_CDR(RET_WRONG_ARG, 1);
-		}
 
-		if(atci.tcmd.arg1[0] == 'S')
-		{
-			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 2);
-			}
-			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 3);
-			}
-			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 4);
-			}
-			dip = DstIP;
-		}
-		else if(atci.tcmd.arg1[0] == 'C')
-		{
-			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 2);
-			}
-			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 3);
-			}
-			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 4);
-			}
-			dip = DstIP;
-		}
-		else if(atci.tcmd.arg1[0] == 'M')
-		{
-			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 2);
-			}
-			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 3);
-			}
-			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 4);
-			}
-			dip = DstIP;
-		}
-		else if(atci.tcmd.arg1[0] == 'U')
-		{
-			if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 2);
-			}
-			if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 3);
-			}
-			if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)
-			{
-				RESP_CDR(RET_WRONG_ARG, 4);
-			}
-			dip = DstIP;
-		}
-		else
-		{	// 'A'	¹«½Ã??Ã¥??³Ä ??´Ï?????? ??ÀÎ ??Ã¥??³Ä
-			// Nothing to do for A mode
-		}
-		CHK_ARG_LEN(atci.tcmd.arg5, 0, 5);
-		type = atci.tcmd.arg1[0];
-		CMD_CLEAR();
-		act_nmode_a(type, SrcPort, dip, DstPort);
-	}
-	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
-}
 static void hdl_nauto(void)
 {
 	RESP_CR(RET_NOT_ALLOWED);
@@ -1025,6 +932,115 @@ static void hdl_mrst(void)
 		while(RingBuffer_GetCount(&txring) != 0);
 		NVIC_SystemReset();
 	} else RESP_CR(RET_WRONG_SIGN);
+}
+
+static void hdl_mmode(void)
+{
+	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP
+	uint8_t DstIP[4], *dip = NULL;
+	uint16_t SrcPort, DstPort = 0;
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;
+
+	if(atci.tcmd.sign == CMD_SIGN_QUEST) {
+		CMD_CLEAR();
+		act_mmode_q();
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) {
+		RESP_CR(RET_WRONG_SIGN);
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
+	{
+		if(CMP_CHAR_4(atci.tcmd.arg1, 'S', 'C', 'M', 'U')) 	RESP_CDR(RET_WRONG_ARG, 1);
+		if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)	RESP_CDR(RET_WRONG_ARG, 2);
+		if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)		RESP_CDR(RET_WRONG_ARG, 3);
+		if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)	RESP_CDR(RET_WRONG_ARG, 4);
+
+		dip = DstIP;
+
+		CHK_ARG_LEN(atci.tcmd.arg5, 0, 5);
+		type = atci.tcmd.arg1[0];
+		CMD_CLEAR();
+		act_mmode_a(type, SrcPort, dip, DstPort);
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
+}
+
+static void hdl_mpass(void)
+{
+	char pwSetting[PASS_LEN] = {'\0',};
+	char pwConnect[PASS_LEN] = {'\0',};
+
+	uint8_t *pwSettingPtr = NULL;
+	uint8_t *pwConnectPtr = NULL;
+
+	uint8_t pwSettingLen, pwConnectLen;
+
+	uint8_t i;
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;
+
+	if(atci.tcmd.sign == CMD_SIGN_QUEST) {
+		CMD_CLEAR();
+		act_mpass_q();
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL) {
+
+		pwSettingLen = strlen(atci.tcmd.arg1);
+		pwConnectLen = strlen(atci.tcmd.arg2);
+
+		if(pwSettingLen > (PASS_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 1);
+		if(pwConnectLen > (PASS_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 1);
+
+		for(i=0; i < pwSettingLen; i++) {
+			pwSetting[i] = atci.tcmd.arg1[i];
+		}
+		for(i=0; i < pwConnectLen; i++) {
+			pwConnect[i] = atci.tcmd.arg2[i];
+		}
+		pwSettingPtr = pwSetting;
+		pwConnectPtr = pwConnect;
+
+		CMD_CLEAR();
+
+		act_mpass_a(pwSettingPtr, pwSettingLen, pwConnectPtr, pwConnectLen);
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
+}
+
+static void hdl_mname(void)
+{
+	char name[NAME_LEN] = {'\0',};
+
+	uint8_t *namePtr = NULL;
+	uint8_t nameLen;
+	uint8_t i;
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;
+
+	if(atci.tcmd.sign == CMD_SIGN_QUEST) {
+		CMD_CLEAR();
+		act_mname_q();
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL) {
+
+		nameLen = strlen(atci.tcmd.arg1);
+
+		if(nameLen > (NAME_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 1);
+
+		for(i=0; i < nameLen; i++) {
+			name[i] = atci.tcmd.arg1[i];
+		}
+
+		namePtr = name;
+
+		CMD_CLEAR();
+
+		act_mname_a(namePtr, nameLen);
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
 }
 
 static void hdl_fdns(void)
