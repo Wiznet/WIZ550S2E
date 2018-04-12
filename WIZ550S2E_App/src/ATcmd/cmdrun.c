@@ -102,7 +102,7 @@ void atc_async_cb(uint8_t sock, uint8_t item, int32_t ret)
 		}
 		break;
 	case WATCH_SOCK_TCP_SEND:	DBG("WATCH_SOCK_TCP_SEND");
-		// 블로??모드로만 ?�작??그러므�?Watch???�요가 ?�음
+		// 블로킹 모드로만 동작함 그러므로 Watch할 필요가 없음
 		break;
 	case WATCH_SOCK_CONN_TRY:	DBG("WATCH_SOCK_CONN_TRY");
 		sockbusy[sock] = VAL_FALSE;
@@ -651,7 +651,7 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 										//DBGA("RECV prt-len(%d), max(%d)", len, maxlen);
 	recvflag[sock] = VAL_CLEAR;
 
-	if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_IDLE) {	// ?�버그용?? ?�정?�면 간단?�게 ?�정??�
+	if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_IDLE) {	// 디버그용임. 안정되면 간단하게 수정할 것
 		CRITICAL_ERRA("Impossible status - recv from closed sock(%d)", sock);
 	} else if(sockstat[sock] & SOCK_STAT_TCP_MASK) {	// TCP
 		if(sockstat[sock] & SOCK_STAT_CONNECTED)

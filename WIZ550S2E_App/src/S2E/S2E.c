@@ -271,7 +271,7 @@ static void trigger_none_process(uint8_t sock_state)
 		return;
 	}
 
-	if(uart_size_prev == RingBuffer_GetCount(&rxring)) {			// UART ?�신 ?�이?��? ?�으�?
+	if(uart_size_prev == RingBuffer_GetCount(&rxring)) {			// UART 수신 데이터가 없으면
 		if(trigger_flag == 0)
 			trigger_flag = 1;
 	} else {
@@ -598,7 +598,7 @@ static void s2e_sockudp_process(uint8_t sock)
 			break;
 
 		case UDP_MODE:
-			/* S2E ?�작 */
+			/* S2E 동작 */
 			ether_to_uart(sock);
 			uart_to_ether(sock);
 			break;
