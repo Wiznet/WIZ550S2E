@@ -32,8 +32,8 @@
 #define MAKE_TCMD_ADDR(arg_p, a1_p, a2_p, a3_p, a4_p) \
 	sprintf((char*)arg_p, "%d.%d.%d.%d", a1_p, a2_p, a3_p, a4_p)
 #define MAKE_TCMD_STRING(arg_p, argsize_v, str_p) do { \
-	uint8 len = strlen((char*)str_p); \
-	if(len > argsize_v-1) {memcpy((char*)arg_p, (char*)str_p, argsize_v-1); arg_p[argsize_v-1]=0;} \
+	uint8_t len = strlen((char*)str_p); \
+	if(len > argsize_v) {memcpy((char*)arg_p, (char*)str_p, argsize_v); arg_p[argsize_v]=0;} \
 	else {memcpy((char*)arg_p, (char*)str_p, len); arg_p[len]=0;} \
 } while(0)
 #define EVENT_RESP(id_v, evt_v)			printf("[V,%d,%d]\r\n", id_v, evt_v)
@@ -455,35 +455,7 @@ void act_nopen_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
 		ARG_CLEAR(atci.tcmd.arg1);
 	}
 }
-void act_nmode_q(void)
-{
-	cmd_resp(RET_NOT_ALLOWED, VAL_NONE);
-}
-void act_nmode_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
-{
-	S2E_Packet *packet = get_S2E_Packet_pointer();
 
-	if(type == 'S') {
-		packet->network_info[0].working_mode = TCP_SERVER_MODE;
-	} else if(type == 'C') {
-		packet->network_info[0].working_mode = TCP_CLIENT_MODE;
-	} else if(type == 'M') {
-		packet->network_info[0].working_mode = TCP_MIXED_MODE;
-	} else if(type == 'U') {
-		packet->network_info[0].working_mode = UDP_MODE;
-	}
-	packet->network_info[0].local_port = sport;
-
-	packet->network_info[0].remote_ip[0] = dip[0];
-	packet->network_info[0].remote_ip[1] = dip[1];
-	packet->network_info[0].remote_ip[2] = dip[2];
-	packet->network_info[0].remote_ip[3] = dip[3];
-
-	packet->network_info[0].remote_port = dport;
-	save_S2E_Packet_to_eeprom();
-
-	cmd_resp(RET_OK, VAL_NONE);
-}
 void act_nclose(uint8_t sock)
 {
 	int8_t ret;
@@ -663,7 +635,6 @@ void act_nrecv(int8_t sock, uint16_t maxlen){
 		}
 		len = recv(sock, (uint8_t*)atci.recvbuf, recvsize);			//DBGA("TCPdbg---m(%d)l(%d)f(%d)", maxlen, len, GetSocketRxRecvBufferSize(sock));
 	} else {									// UDP
-		uint16_t bufleft = maxlen;
 
 		getsockopt(sock, SO_RECVBUF, (uint16_t*)&recvsize);
 		if(recvsize == 0) {
@@ -906,6 +877,115 @@ void act_mdata(void)
 void act_msave(void)
 {
 	save_S2E_Packet_to_eeprom();
+	cmd_resp(RET_OK, VAL_NONE);
+}
+
+void act_mmode_q(void)
+{
+	S2E_Packet *option = get_S2E_Packet_pointer();
+	uint8_t ip[4];
+	memcpy(ip, option->network_info[0].remote_ip, 4);
+
+	if(option->network_info[0].working_mode == TCP_SERVER_MODE) {
+		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'S');
+	} else if(option->network_info[0].working_mode == TCP_CLIENT_MODE) {
+		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'C');
+	} else if(option->network_info[0].working_mode == TCP_MIXED_MODE) {
+		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'M');
+	} else if(option->network_info[0].working_mode == UDP_MODE) {
+		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'U');
+	}
+
+	MAKE_TCMD_DIGIT(atci.tcmd.arg2, option->network_info[0].local_port);
+
+	MAKE_TCMD_ADDR(atci.tcmd.arg3, ip[0], ip[1], ip[2], ip[3]);
+
+	MAKE_TCMD_DIGIT(atci.tcmd.arg4, option->network_info[0].remote_port);
+
+	cmd_resp(RET_OK, VAL_NONE);
+	ARG_CLEAR(atci.tcmd.arg1);
+	ARG_CLEAR(atci.tcmd.arg2);
+	ARG_CLEAR(atci.tcmd.arg3);
+	ARG_CLEAR(atci.tcmd.arg4);
+	return;
+}
+
+void act_mmode_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
+{
+	S2E_Packet *option = get_S2E_Packet_pointer();
+
+	if(type == 'S') {
+		option->network_info[0].working_mode = TCP_SERVER_MODE;
+	} else if(type == 'C') {
+		option->network_info[0].working_mode = TCP_CLIENT_MODE;
+	} else if(type == 'M') {
+		option->network_info[0].working_mode = TCP_MIXED_MODE;
+	} else if(type == 'U') {
+		option->network_info[0].working_mode = UDP_MODE;
+	}
+	option->network_info[0].local_port = sport;
+
+	option->network_info[0].remote_ip[0] = dip[0];
+	option->network_info[0].remote_ip[1] = dip[1];
+	option->network_info[0].remote_ip[2] = dip[2];
+	option->network_info[0].remote_ip[3] = dip[3];
+
+	option->network_info[0].remote_port = dport;
+
+	save_S2E_Packet_to_eeprom();
+
+	cmd_resp(RET_OK, VAL_NONE);
+}
+
+void act_mpass_q(void)
+{
+	S2E_Packet *option = get_S2E_Packet_pointer();
+
+	MAKE_TCMD_STRING(atci.tcmd.arg1, strlen(option->options.pw_setting), option->options.pw_setting);
+	MAKE_TCMD_STRING(atci.tcmd.arg2, strlen(option->options.pw_connect), option->options.pw_connect);
+
+	cmd_resp(RET_OK, VAL_NONE);
+
+	ARG_CLEAR(atci.tcmd.arg1);
+	ARG_CLEAR(atci.tcmd.arg2);
+}
+
+void act_mpass_a(uint8_t *pwSetting, uint8_t pwSettingLen, uint8_t *pwConnect, uint8_t pwConnectLen)
+{
+	S2E_Packet *option = get_S2E_Packet_pointer();
+
+	memset(option->options.pw_setting, '\0', PASS_LEN);
+	memset(option->options.pw_connect, '\0', PASS_LEN);
+
+	memcpy(option->options.pw_setting, pwSetting, pwSettingLen);
+	memcpy(option->options.pw_connect, pwConnect, pwConnectLen);
+
+	save_S2E_Packet_to_eeprom();
+
+	cmd_resp(RET_OK, VAL_NONE);
+}
+
+void act_mname_q(void)
+{
+	S2E_Packet *option = get_S2E_Packet_pointer();
+
+	MAKE_TCMD_STRING(atci.tcmd.arg1, strlen(option->module_name), option->module_name);
+
+	cmd_resp(RET_OK, VAL_NONE);
+
+	ARG_CLEAR(atci.tcmd.arg1);
+}
+
+void act_mname_a(uint8_t *name, uint8_t nameLen)
+{
+	S2E_Packet *option = get_S2E_Packet_pointer();
+
+	memset(option->module_name, '\0', NAME_LEN);
+
+	memcpy(option->module_name, name, nameLen);
+
+	save_S2E_Packet_to_eeprom();
+
 	cmd_resp(RET_OK, VAL_NONE);
 }
 
