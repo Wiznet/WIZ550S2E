@@ -137,6 +137,14 @@ Install JAVA Runtime Environment
 
 ## Revision History
 
+### v1.1.5
+
+- Added features
+	- AT+MPASS : (AT command) Change the module's name(automatically saved)
+	- AT+MNAME : (AT command) Change the module's password(automatically saved)
+- Changed
+	- AT+NMODE -> AT+MMODE
+
 ### v1.1.4
 
 - Fixed Problems receiving data in AT Mode
@@ -152,7 +160,7 @@ Install JAVA Runtime Environment
 
 ### v1.1.1
 
-- Add inactivity time function in Server/Mixed Mode
+- Added inactivity time function in Server/Mixed Mode
 
 ### v1.1.0
 
@@ -176,8 +184,8 @@ Install JAVA Runtime Environment
 	- AT Command Trigger
 		- Before : AT command is actived regardless of AT command enable.
 		- After : AT command is actived regard of AT command enable.
-- Add function
-	- AT+NMODE : (AT command) Saving the changes made to AT mode to memory.
+- Added features
+	- AT+NMODE : (AT command) Change the settings that operates in data mode(automatically saved)
 
 ### v1.0.2
 
@@ -188,7 +196,7 @@ Install JAVA Runtime Environment
 	- In AT command
 		- Before : at = a t. in other words, ignore space.
 		- After : at != a t. in other words, admitte space.
-- Add function
+- Added features
 	- Check unlink in mixed mode
 	- AT+FDNS = domain name
 
