@@ -15,8 +15,14 @@
 #define TCP_SERVER_MODE		1
 #define TCP_MIXED_MODE		2
 #define UDP_MODE			3
+#define MQTT				4
+
 #define PASS_LEN 			10
 #define NAME_LEN 			25
+
+#define MQTT_ACCOUNT_LEN	10
+#define MQTT_PASS_LEN		10
+#define MQTT_TOPIC_LEN		25
 
 enum baud {
 	baud_300 = 300,
@@ -105,12 +111,17 @@ struct __options {
 
 	uint8_t serial_command;			// Serial Command Mode 사용 여부
 	uint8_t serial_trigger[3];		// Serial Command Mode 진입을 위한 Trigger 코드
+
+	char mqtt_user[MQTT_ACCOUNT_LEN];
+	char mqtt_pw[MQTT_ACCOUNT_LEN];
+	char mqtt_publish_topic[MQTT_TOPIC_LEN];
+	char mqtt_subscribe_topic[MQTT_TOPIC_LEN];
 } __attribute__((packed));
 
 typedef struct __S2E_Packet {
 	uint16_t packet_size;
 	uint8_t module_type[3]; // 모듈의 종류별로 코드를 부여하고 이를 사용한다.
-	uint8_t module_name[NAME_LEN];
+	char module_name[NAME_LEN];
 	uint8_t fw_ver[3];			// 10진수. Major Version . Minor Version . Maintenance Version 버전으로 나뉨
 	struct __network_info_common network_info_common;
 	struct __network_info network_info[1];	// 여러개 소켓을 사용할 경우

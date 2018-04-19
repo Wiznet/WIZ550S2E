@@ -894,7 +894,10 @@ void act_mmode_q(void)
 		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'M');
 	} else if(option->network_info[0].working_mode == UDP_MODE) {
 		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'U');
+	} else if(option->network_info[0].working_mode == MQTT) {
+		MAKE_TCMD_CHAR(atci.tcmd.arg1, 'Q');
 	}
+
 
 	MAKE_TCMD_DIGIT(atci.tcmd.arg2, option->network_info[0].local_port);
 
@@ -922,6 +925,8 @@ void act_mmode_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
 		option->network_info[0].working_mode = TCP_MIXED_MODE;
 	} else if(type == 'U') {
 		option->network_info[0].working_mode = UDP_MODE;
+	} else if(type == 'Q') {
+		option->network_info[0].working_mode = MQTT;
 	}
 	option->network_info[0].local_port = sport;
 

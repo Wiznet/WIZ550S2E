@@ -9,6 +9,8 @@
 #define TRIG_STATE_2			3
 #define TRIG_STATE_3			4
 
+//#define __MQTT_DEBUG__
+
 extern uint32_t uart_send_cnt;
 extern uint32_t uart_recv_cnt;
 extern uint32_t ether_send_cnt;

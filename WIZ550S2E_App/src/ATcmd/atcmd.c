@@ -37,6 +37,8 @@
 	(str_p[1] != 0 || ((str_p[0]=toupper(str_p[0]))!=c1_v && str_p[0]!=c2_v && str_p[0]!=c3_v))
 #define CMP_CHAR_4(str_p, c1_v, c2_v, c3_v, c4_v) \
 	(str_p[1] != 0 || ((str_p[0]=toupper(str_p[0]))!=c1_v && str_p[0]!=c2_v && str_p[0]!=c3_v && str_p[0]!=c4_v))
+#define CMP_CHAR_5(str_p, c1_v, c2_v, c3_v, c4_v, c5_v) \
+	(str_p[1] != 0 || ((str_p[0]=toupper(str_p[0]))!=c1_v && str_p[0]!=c2_v && str_p[0]!=c3_v && str_p[0]!=c4_v && str_p[0]!=c5_v))
 #define CHK_DGT_RANGE(str_p, snum_v, minval_v, maxval_v) \
 	((snum_v=atoi((char*)str_p))>maxval_v || snum_v<minval_v)
 #define CHK_ARG_LEN(arg_p, maxlen_v, ret_v) { \
@@ -936,7 +938,7 @@ static void hdl_mrst(void)
 
 static void hdl_mmode(void)
 {
-	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP
+	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP, MQTT
 	uint8_t DstIP[4], *dip = NULL;
 	uint16_t SrcPort, DstPort = 0;
 
@@ -951,10 +953,10 @@ static void hdl_mmode(void)
 	}
 	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
 	{
-		if(CMP_CHAR_4(atci.tcmd.arg1, 'S', 'C', 'M', 'U')) 	RESP_CDR(RET_WRONG_ARG, 1);
-		if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)	RESP_CDR(RET_WRONG_ARG, 2);
-		if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)		RESP_CDR(RET_WRONG_ARG, 3);
-		if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)	RESP_CDR(RET_WRONG_ARG, 4);
+		if(CMP_CHAR_5(atci.tcmd.arg1, 'S', 'C', 'M', 'U', 'Q')) 	RESP_CDR(RET_WRONG_ARG, 1);
+		if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)			RESP_CDR(RET_WRONG_ARG, 2);
+		if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)				RESP_CDR(RET_WRONG_ARG, 3);
+		if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)			RESP_CDR(RET_WRONG_ARG, 4);
 
 		dip = DstIP;
 
