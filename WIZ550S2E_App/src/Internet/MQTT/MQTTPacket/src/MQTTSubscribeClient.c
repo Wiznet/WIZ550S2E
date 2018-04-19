@@ -48,7 +48,7 @@ int MQTTSerialize_subscribeLength(int count, MQTTString topicFilters[])
   * @return the length of the serialized data.  <= 0 indicates error
   */
 int MQTTSerialize_subscribe(unsigned char* buf, int buflen, unsigned char dup, unsigned short packetid, int count,
-		MQTTString topicFilters[], int requestedQoSs[])
+		MQTTString topicFilters[], int requestedQoSs)
 {
 	unsigned char *ptr = buf;
 	MQTTHeader header = {0};
@@ -76,7 +76,7 @@ int MQTTSerialize_subscribe(unsigned char* buf, int buflen, unsigned char dup, u
 	for (i = 0; i < count; ++i)
 	{
 		writeMQTTString(&ptr, topicFilters[i]);
-		writeChar(&ptr, requestedQoSs[i]);
+		writeChar(&ptr, requestedQoSs);
 	}
 
 	rc = ptr - buf;

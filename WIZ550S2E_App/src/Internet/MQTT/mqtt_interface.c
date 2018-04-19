@@ -152,7 +152,18 @@ void w5x00_disconnect(Network* n)
 {
 	disconnect(n->my_socket);
 }
+/*
+ * @brief initial network function
+ * @param  n : pointer to a Network structure
+ */
+int InitNetwork(Network* n)
+{
+	int ret = 0;
 
+	ret = socket(n->my_socket, Sn_MR_TCP, 0, 0x00);
+
+	return ret;
+}
 /*
  * @brief connect network function
  * @param  n : pointer to a Network structure
@@ -160,10 +171,11 @@ void w5x00_disconnect(Network* n)
  *         ip : server iP.
  *         port : server port.
  */
-int ConnectNetwork(Network* n, char* ip, int port)
+int ConnectNetwork(Network* n, unsigned char* ip, int port)
 {
-	uint8_t myport = 12345;
+	int ret = 0;
 
-	socket(n->my_socket,Sn_MR_TCP,myport,0);
-	connect(n->my_socket,ip,port);
+	ret = connect(n->my_socket, ip, port);
+
+	return ret;
 }

@@ -79,6 +79,11 @@ void set_S2E_Packet_to_factory_value()
 	s2e_packet.options.serial_trigger[0] = 0x2b;
 	s2e_packet.options.serial_trigger[1] = 0x2b;
 	s2e_packet.options.serial_trigger[2] = 0x2b;
+
+	memset(s2e_packet.options.mqtt_user, '\0', MQTT_ACCOUNT_LEN);
+	memset(s2e_packet.options.mqtt_pw, '\0', MQTT_ACCOUNT_LEN);
+	memset(s2e_packet.options.mqtt_publish_topic, '\0', MQTT_TOPIC_LEN);
+	memset(s2e_packet.options.mqtt_subscribe_topic, '\0', MQTT_TOPIC_LEN);
 }
 
 void load_S2E_Packet_from_eeprom()

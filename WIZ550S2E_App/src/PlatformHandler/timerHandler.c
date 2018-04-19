@@ -6,6 +6,7 @@
 #include "S2E.h"
 #include "DHCP/dhcp.h"
 #include "DNS/dns.h"
+#include "mqtt_interface.h"
 
 volatile uint8_t nagle_flag = 0;
 volatile uint32_t nagle_time = 0;
@@ -51,6 +52,8 @@ void TIMER32_0_IRQHandler(void)
 		Chip_TIMER_ClearMatch(LPC_TIMER32_0, 1);
 
 	mill_cnt++;
+
+	MilliTimer_Handler();
 
 	/* UART Packing Timer Process */
 	if(!nagle_flag && net->packing_time) {

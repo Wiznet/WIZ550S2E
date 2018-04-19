@@ -37,6 +37,8 @@
 	(str_p[1] != 0 || ((str_p[0]=toupper(str_p[0]))!=c1_v && str_p[0]!=c2_v && str_p[0]!=c3_v))
 #define CMP_CHAR_4(str_p, c1_v, c2_v, c3_v, c4_v) \
 	(str_p[1] != 0 || ((str_p[0]=toupper(str_p[0]))!=c1_v && str_p[0]!=c2_v && str_p[0]!=c3_v && str_p[0]!=c4_v))
+#define CMP_CHAR_5(str_p, c1_v, c2_v, c3_v, c4_v, c5_v) \
+	(str_p[1] != 0 || ((str_p[0]=toupper(str_p[0]))!=c1_v && str_p[0]!=c2_v && str_p[0]!=c3_v && str_p[0]!=c4_v && str_p[0]!=c5_v))
 #define CHK_DGT_RANGE(str_p, snum_v, minval_v, maxval_v) \
 	((snum_v=atoi((char*)str_p))>maxval_v || snum_v<minval_v)
 #define CHK_ARG_LEN(arg_p, maxlen_v, ret_v) { \
@@ -154,19 +156,19 @@ void atc_run(void)
 	uint8_t recv_char;
 	static uint8_t buflen = 0;
 
-	if(UART_read(&recv_char, 1) <= 0) return; // ?�력 �??�는 경우		printf("RECV: 0x%x\r\n", recv_char);
+	if(UART_read(&recv_char, 1) <= 0) return; // 입력 값 없는 경우		printf("RECV: 0x%x\r\n", recv_char);
 
 	if(atci.sendsock != VAL_NONE)
 	{
 		atci.sendbuf[atci.worklen++] = recv_char;
-		if(atci.worklen >= atci.sendlen) { // ?�력???�료?�면
+		if(atci.worklen >= atci.sendlen) { // 입력이 완료되면
 			act_nsend(atci.sendsock, (int8_t *)atci.sendbuf, atci.worklen, atci.sendip, &atci.sendport);
 			atci.sendsock = VAL_NONE;
 		}
 		return;
 	}
 
-	if(isgraph(recv_char) == 0 && (recv_char != 0x20))	// ?�어 문자 처리
+	if(isgraph(recv_char) == 0 && (recv_char != 0x20))	// 제어 문자 처리
 	{	//printf("ctrl\r\n");
 		switch(recv_char) {
 			case 0x0d:	// CR(\r)
@@ -194,7 +196,7 @@ void atc_run(void)
 		}
 
 	}
-	else if(buflen < ATCMD_BUF_SIZE-1)		// -1 ?�유 : 0 ???�나 ?�요?��?�?
+	else if(buflen < ATCMD_BUF_SIZE-1)		// -1 이유 : 0 이 하나 필요하므로
 	{
 		termbuf[buflen++] = (uint8_t)recv_char;	//termbuf[buflen] = 0;
 		if(atci.echo) UART_write(&recv_char, 1);
@@ -245,7 +247,7 @@ static void cmd_set_prev(uint8_t buflen)
 		} else CRITICAL_ERR("ring buf 2");
 	}
 
-	if(prevbuf[previdx] == NULL) CRITICAL_ERR("malloc fail");	//  만약 ?�패?�도 �??�고 ?�으�??�정
+	if(prevbuf[previdx] == NULL) CRITICAL_ERR("malloc fail");	//  만약 실패해도 걍 하고 싶으면 수정
 	else {
 		strcpy((char*)prevbuf[previdx], (char*)termbuf);	//printf("$$%s## was set\r\n", prevbuf[previdx]);
 		if(previdx == PREVBUF_LAST) previdx = 0;
@@ -320,7 +322,7 @@ static int8_t cmd_divide(int8_t *buf)
 		CMD_CLEAR();
 		goto FAIL_END;
 	}
-	DBGA("Debug: (%s)", tmpptr);	//최�? arg?�게 ?�어??�??�인??- Strict Param ?�책
+	DBGA("Debug: (%s)", tmpptr);	//최대 arg넘게 들어온 것 확인용 - Strict Param 정책
 
 OK_END:
 	ret = RET_OK;
@@ -454,7 +456,7 @@ static void hdl_nset(void)
 	int8_t mode, num = -1;
 	uint8_t ip[4];
 
-	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;	// x???�?치환
+	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;	// x는 ?로 치환
 	if(atci.tcmd.sign == CMD_SIGN_QUEST)
 	{
 		if(atci.tcmd.arg1[0] != 0) {
@@ -600,7 +602,7 @@ static void hdl_nopen(void)
 				CHK_ARG_LEN(atci.tcmd.arg3, 0, 3);
 				CHK_ARG_LEN(atci.tcmd.arg4, 0, 4);
 			}
-		} else {	// 'A'	무시?�책?�냐 ?�니�??��? ?�인 ?�책?�냐
+		} else {	// 'A'	무시정책이냐 아니면 전부 확인 정책이냐
 			// Nothing to do for A mode
 		}
 
@@ -678,7 +680,7 @@ static void hdl_nsend(void)
 		ret = act_nsend_chk(num, &atci.sendlen, dip, dport);
 		if(ret != RET_OK) return;
 
-		atci.sendsock = num;	// ?�효??검?��? ?�료?�면 SEND모드�??�환
+		atci.sendsock = num;	// 유효성 검사가 완료되면 SEND모드로 전환
 		atci.worklen = 0;
 		cmd_resp(RET_ASYNC, num);
 	}
@@ -739,7 +741,7 @@ static void hdl_mset(void)
 				poll = atci.tcmd.arg2[0];
 				CMD_CLEAR();
 				act_mset_a(0, poll, 0);
-			} else RESP_CDR(RET_NOT_ALLOWED, 2);	// �?? ?�정 ?�직 구현?�함
+			} else RESP_CDR(RET_NOT_ALLOWED, 2);	// 국가 설정 아직 구현안함
 		} else RESP_CDR(RET_WRONG_ARG, 1);
 	}
 	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
@@ -753,7 +755,7 @@ static void hdl_mset(void)
 			num++;
 			if(CMP_CHAR_3(atci.tcmd.arg2, 'F', 'S', 'D')) RESP_CDR(RET_WRONG_ARG, 2);
 		}
-		// arg 3 ?� ?�단 무시
+		// arg 3 은 일단 무시
 		if(num == 0) RESP_CR(RET_NOT_ALLOWED);
 		echo = atci.tcmd.arg1[0];
 		poll = atci.tcmd.arg2[0];
@@ -846,7 +848,7 @@ static void hdl_musart(void)
 				else value->serial_info[0].flow_control = num;
 				CMD_CLEAR();
 				act_uart_a(&(value->serial_info[0]));
-			} else RESP_CDR(RET_NOT_ALLOWED, 2);	// �?? ?�정 ?�직 구현?�함
+			} else RESP_CDR(RET_NOT_ALLOWED, 2);	// 국가 설정 아직 구현안함
 		} else RESP_CDR(RET_WRONG_ARG, 1);
 	}
 	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
@@ -936,7 +938,7 @@ static void hdl_mrst(void)
 
 static void hdl_mmode(void)
 {
-	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP
+	int8_t type=0; //TCP Server, TCP Client, TCP Mixed, UDP, MQTT
 	uint8_t DstIP[4], *dip = NULL;
 	uint16_t SrcPort, DstPort = 0;
 
@@ -951,10 +953,10 @@ static void hdl_mmode(void)
 	}
 	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
 	{
-		if(CMP_CHAR_4(atci.tcmd.arg1, 'S', 'C', 'M', 'U')) 	RESP_CDR(RET_WRONG_ARG, 1);
-		if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)	RESP_CDR(RET_WRONG_ARG, 2);
-		if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)		RESP_CDR(RET_WRONG_ARG, 3);
-		if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)	RESP_CDR(RET_WRONG_ARG, 4);
+		if(CMP_CHAR_5(atci.tcmd.arg1, 'S', 'C', 'M', 'U', 'Q')) 	RESP_CDR(RET_WRONG_ARG, 1);
+		if(port_check(atci.tcmd.arg2, &SrcPort) != RET_OK)			RESP_CDR(RET_WRONG_ARG, 2);
+		if(ip_check(atci.tcmd.arg3, DstIP) != RET_OK)				RESP_CDR(RET_WRONG_ARG, 3);
+		if(port_check(atci.tcmd.arg4, &DstPort) != RET_OK)			RESP_CDR(RET_WRONG_ARG, 4);
 
 		dip = DstIP;
 
