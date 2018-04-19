@@ -137,6 +137,12 @@ Install JAVA Runtime Environment
 
 ## Revision History
 
+### v1.2.0
+
+- Added features
+	- MQTT
+		- v1.10 Configuration Tool is required.
+
 ### v1.1.5
 
 - Added features
