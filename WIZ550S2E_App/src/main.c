@@ -49,10 +49,6 @@ uint8_t g_recv_buf[WORK_BUF_SIZE] = {'\0',};
 
 uint8_t run_dns = 1;
 uint8_t op_mode;
-
-Network mqttNetwork;
-MQTTClient mqttClient;
-MQTTPacket_connectData mqttConnectData = MQTTPacket_connectData_initializer;
 /*****************************************************************************
  * Private functions
  ****************************************************************************/
@@ -146,9 +142,6 @@ int main(void)
 				DHCP_run();
 		}
 	}
-
-	NewNetwork(&mqttNetwork, SOCK_MQTT);
-	MQTTClientInit(&mqttClient, &mqttNetwork, 1000, g_send_buf, WORK_BUF_SIZE, g_recv_buf, WORK_BUF_SIZE);
 
 	atc_init();
 
