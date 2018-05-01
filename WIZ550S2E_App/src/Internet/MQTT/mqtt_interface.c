@@ -42,6 +42,7 @@
 
 #include "mqtt_interface.h"
 #include "wizchip_conf.h"
+#include "socket.h"
 
 unsigned long MilliTimer;
 
@@ -160,7 +161,7 @@ int InitNetwork(Network* n)
 {
 	int ret = 0;
 
-	ret = socket(n->my_socket, Sn_MR_TCP, 0, 0x00);
+	ret = socket(n->my_socket, Sn_MR_TCP, 0, SF_IO_NONBLOCK);
 
 	return ret;
 }

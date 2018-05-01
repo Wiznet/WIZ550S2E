@@ -21,7 +21,6 @@
 #define NAME_LEN 			25
 
 #define MQTT_ACCOUNT_LEN	10
-#define MQTT_PASS_LEN		10
 #define MQTT_TOPIC_LEN		25
 
 enum baud {

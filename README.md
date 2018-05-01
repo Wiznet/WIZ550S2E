@@ -137,6 +137,14 @@ Install JAVA Runtime Environment
 
 ## Revision History
 
+### v1.2.1
+
+- Fixed bugs
+	- Fixed a bug that stops when the module switches to data mode and at-command mode.
+	- The MQTT socket has been modified to open as a nonblock.
+	- Modified the memory used for MQTT publishing from static to dynamic allocation.
+	- Fixed to update connection LED and network state when switching to at-command mode.
+
 ### v1.2.0
 
 - Added features
