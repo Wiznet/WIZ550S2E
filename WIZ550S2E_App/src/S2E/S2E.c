@@ -30,29 +30,36 @@ uint32_t uart_recv_cnt = 0;
 uint32_t ether_send_cnt = 0;
 uint32_t ether_recv_cnt = 0;
 
-extern Network mqttNetwork;
-extern MQTTClient mqttClient;
-extern MQTTPacket_connectData mqttConnectData;
-unsigned char mqtt_buf[WORK_BUF_SIZE] = {'\0',};
+Network mqttNetwork;
+MQTTClient mqttClient;
+
+static uint8_t mqttInit = 0;
 
 static void messageArrived(MessageData* md)
 {
-	uint16_t len = 0;
+	uint16_t subMessagelen = 0;
+	int subTopiclen = 0;
 	MQTTMessage* mqttSubMessage = md->message;
+	MQTTString* mqttSubTopic = md->topicName;
 
-	len = (int)mqttSubMessage->payloadlen;
+	subMessagelen = (int)mqttSubMessage->payloadlen;
+	subTopiclen = mqttSubTopic->lenstring.len;
 
-	if(len > UART_SRB_SIZE)
-		len = UART_SRB_SIZE;
+#ifdef __MQTT_DEBUG__
+	printf("messageArrived : %s, %d\r\n", (char*)mqttSubTopic->lenstring.data, subTopiclen);
+#endif
 
-	if((len > 0) && len <= RingBuffer_GetFree(&txring))
-		ether_recv_cnt += len;
+	if(subMessagelen > UART_SRB_SIZE)
+		subMessagelen = UART_SRB_SIZE;
+
+	if((subMessagelen > 0) && subMessagelen <= RingBuffer_GetFree(&txring))
+		ether_recv_cnt += subMessagelen;
 	else
-		len = 0;
+		subMessagelen = 0;
 
-	if(len) {
+	if(subMessagelen) {
 		Chip_UART_SendRB(LPC_USART, &txring, (char*)mqttSubMessage->payload, (int)mqttSubMessage->payloadlen);
-		uart_send_cnt += len;
+		uart_send_cnt += subMessagelen;
 	}
 }
 
@@ -203,6 +210,8 @@ static void uart_to_ether(uint8_t sock)
 	uint16_t len = 0;
 	int ret, uart_read_len = sizeof(g_send_buf);
 
+	char *mqtt_buf_ptr;
+
 	if(RingBuffer_IsEmpty(&rxring))
 		return;
 
@@ -260,8 +269,16 @@ static void uart_to_ether(uint8_t sock)
 
 	/* Data Transfer */
 	if(net->working_mode == MQTT) {
-		memset(mqtt_buf, '\0', sizeof(mqtt_buf));
-		len = Chip_UART_ReadRB(LPC_USART, &rxring, &mqtt_buf, uart_read_len);
+		mqtt_buf_ptr = (char *)malloc(sizeof(char)*uart_read_len);
+
+		if(mqtt_buf_ptr == NULL) {
+#ifdef __MQTT_DEBUG__
+			printf("MQTT Out of memory for publish\r\n");
+#endif
+			return;
+		}
+
+		len = Chip_UART_ReadRB(LPC_USART, &rxring, mqtt_buf_ptr, uart_read_len);
 	}
 	else
 		len = Chip_UART_ReadRB(LPC_USART, &rxring, &g_send_buf, uart_read_len);
@@ -287,12 +304,13 @@ static void uart_to_ether(uint8_t sock)
 	else if(sock_state == SOCK_ESTABLISHED)
 	{
 		if(net->working_mode == MQTT) {
-			mqttPubMessage.payload		= mqtt_buf;
+			mqttPubMessage.payload		= mqtt_buf_ptr;
 			mqttPubMessage.payloadlen	= len;
 			mqttPubMessage.qos			= QOS0;
 			mqttPubMessage.retained		= 0;
 			mqttPubMessage.dup			= 0;
 			ret = MQTTPublish(&mqttClient, option->mqtt_publish_topic, &mqttPubMessage);
+			free(mqtt_buf_ptr);
 			if(ret != SUCCESSS) {
 #ifdef __MQTT_DEBUG__
 				printf("MQTT publish error - ret : %d\r\n", ret);
@@ -466,6 +484,10 @@ static void trigger_state3_process(uint8_t sock)
 		Chip_UART_SendRB(LPC_USART, &txring, "[S,0]\r\n", 7);
 		op_mode = OP_COMMAND;
 
+		Board_LED_Set(1, false);
+
+		net->state = net_disconnect;
+
 		close(sock);
 		return;
 	}
@@ -493,6 +515,11 @@ static void s2e_sockclose_process(uint8_t sock)
 
 	switch(net->working_mode) {
 		case MQTT:
+			if(mqttInit == 0) {
+				mqttInit = 1;
+				NewNetwork(&mqttNetwork, sock);
+			}
+			MQTTClientInit(&mqttClient, &mqttNetwork, 1000, g_send_buf, WORK_BUF_SIZE, g_recv_buf, WORK_BUF_SIZE);
 			InitNetwork(&mqttNetwork);
 			break;
 		case TCP_CLIENT_MODE:
@@ -597,6 +624,8 @@ static void s2e_sockestablished_process(uint8_t sock)
 	int ret;
 	S2E_Packet *value = get_S2E_Packet_pointer();
 
+	MQTTPacket_connectData mqttConnectData = MQTTPacket_connectData_initializer;
+
 	if(reconn_flag)
 		reconn_flag = reconn_time = 0;
 
@@ -608,8 +637,8 @@ static void s2e_sockestablished_process(uint8_t sock)
 				return;
 			}
 		case MQTT:
-			if(getSn_IR(SOCK_MQTT) & Sn_IR_CON) {
-				setSn_IR(SOCK_MQTT,Sn_IR_CON);
+			if(getSn_IR(sock) & Sn_IR_CON) {
+				setSn_IR(sock,Sn_IR_CON);
 
 				mqttConnectData.MQTTVersion			= 4;
 				mqttConnectData.clientID.cstring 	= value->module_name;
@@ -626,7 +655,7 @@ static void s2e_sockestablished_process(uint8_t sock)
 #endif
 				}
 
-				ret = MQTTSubscribe(&mqttClient, value->options.mqtt_subscribe_topic, QOS0, messageArrived);
+				ret = MQTTSubscribe(&mqttClient, value->options.mqtt_subscribe_topic, QOS0, (volatile)messageArrived);
 				if(ret != SUCCESSS) {
 #ifdef __MQTT_DEBUG__
 					printf("MQTT subscribe error - ret : %d\r\n", ret);
@@ -757,9 +786,6 @@ void s2e_run(uint8_t sock)
 	struct __network_info *net = (struct __network_info *)get_S2E_Packet_pointer()->network_info;
 	struct __options *option = (struct __options *)&(get_S2E_Packet_pointer()->options);
 	uint8_t sock_state;
-
-	if(net->working_mode == MQTT)
-		sock = SOCK_MQTT;
 
 	getsockopt(sock, SO_STATUS, &sock_state);
 

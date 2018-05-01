@@ -9,14 +9,13 @@
 
 #define MAJOR_VER		1
 #define MINOR_VER		2
-#define MAINTENANCE_VER	0
+#define MAINTENANCE_VER	1
 
 #define SOCK_DATA		0
 #define SOCK_CONFIG		1
 #define SOCK_TFTP		2
 #define SOCK_DHCP		3
 #define SOCK_DNS		4
-#define SOCK_MQTT		5
 
 #define OP_COMMAND		0
 #define OP_DATA			1
