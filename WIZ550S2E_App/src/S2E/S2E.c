@@ -33,9 +33,9 @@ uint32_t ether_recv_cnt = 0;
 Network mqttNetwork;
 MQTTClient mqttClient;
 
-static uint8_t mqttInit = 0;
+uint8_t mqttInit = 0;
 
-static void messageArrived(MessageData* md)
+static void dataModeSubscribe(MessageData* md)
 {
 	uint16_t subMessagelen = 0;
 	int subTopiclen = 0;
@@ -45,8 +45,8 @@ static void messageArrived(MessageData* md)
 	subMessagelen = (int)mqttSubMessage->payloadlen;
 	subTopiclen = mqttSubTopic->lenstring.len;
 
-#ifdef __MQTT_DEBUG__
-	printf("messageArrived : %s, %d\r\n", (char*)mqttSubTopic->lenstring.data, subTopiclen);
+#ifdef __DATA_MODE_MQTT_DEBUG__
+	printf("MQTT Subscribe Topic : %s, len : %d\r\n", (char*)mqttSubTopic->lenstring.data, subTopiclen);
 #endif
 
 	if(subMessagelen > UART_SRB_SIZE)
@@ -272,7 +272,7 @@ static void uart_to_ether(uint8_t sock)
 		mqtt_buf_ptr = (char *)malloc(sizeof(char)*uart_read_len);
 
 		if(mqtt_buf_ptr == NULL) {
-#ifdef __MQTT_DEBUG__
+#ifdef __DATA_MODE_MQTT_DEBUG__
 			printf("MQTT Out of memory for publish\r\n");
 #endif
 			return;
@@ -312,7 +312,7 @@ static void uart_to_ether(uint8_t sock)
 			ret = MQTTPublish(&mqttClient, option->mqtt_publish_topic, &mqttPubMessage);
 			free(mqtt_buf_ptr);
 			if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
+#ifdef __DATA_MODE_MQTT_DEBUG__
 				printf("MQTT publish error - ret : %d\r\n", ret);
 #endif
 				return;
@@ -468,11 +468,11 @@ static void trigger_state3_process(uint8_t sock)
 
 		if(net->working_mode == MQTT) {
 			ret = MQTTDisconnect(&mqttClient);
+#ifdef __DATA_MODE_MQTT_DEBUG__
 			if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
 				printf("MQTT diconnect error - ret : %d\r\n", ret);
-#endif
 			}
+#endif
 		}
 		else
 			disconnect(sock);
@@ -519,8 +519,9 @@ static void s2e_sockclose_process(uint8_t sock)
 				mqttInit = 1;
 				NewNetwork(&mqttNetwork, sock);
 			}
+			mqttNetwork.my_socket = sock;
 			MQTTClientInit(&mqttClient, &mqttNetwork, 1000, g_send_buf, WORK_BUF_SIZE, g_recv_buf, WORK_BUF_SIZE);
-			InitNetwork(&mqttNetwork);
+			InitNetwork(&mqttNetwork, net->local_port, SF_IO_NONBLOCK);
 			break;
 		case TCP_CLIENT_MODE:
 		case TCP_SERVER_MODE:
@@ -637,29 +638,33 @@ static void s2e_sockestablished_process(uint8_t sock)
 				return;
 			}
 		case MQTT:
-			if(getSn_IR(sock) & Sn_IR_CON) {
-				setSn_IR(sock,Sn_IR_CON);
+			if(value->network_info[0].working_mode == MQTT) {
+				if(getSn_IR(sock) & Sn_IR_CON) {
+					setSn_IR(sock,Sn_IR_CON);
 
-				mqttConnectData.MQTTVersion			= 4;
-				mqttConnectData.clientID.cstring 	= value->module_name;
-				mqttConnectData.username.cstring 	= value->options.mqtt_user;
-				mqttConnectData.password.cstring 	= value->options.mqtt_pw;
-				mqttConnectData.willFlag 			= 0;
-				mqttConnectData.keepAliveInterval   = 60;
-				mqttConnectData.cleansession        = 1;
+					mqttConnectData.MQTTVersion			= 4;
+					mqttConnectData.clientID.cstring 	= value->module_name;
+					mqttConnectData.username.cstring 	= value->options.mqtt_user;
+					mqttConnectData.password.cstring 	= value->options.mqtt_pw;
+					mqttConnectData.willFlag 			= 0;
+					mqttConnectData.keepAliveInterval   = 60;
+					mqttConnectData.cleansession        = 1;
 
-				ret = MQTTConnect(&mqttClient, &mqttConnectData);
-				if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
-					printf("MQTT connect error - ret : %d\r\n", ret);
+					ret = MQTTConnect(&mqttClient, &mqttConnectData);
+#ifdef __DATA_MODE_MQTT_DEBUG__
+					if(ret != SUCCESSS) {
+						printf("MQTT connect error - ret : %d\r\n", ret);
+					}
 #endif
-				}
-
-				ret = MQTTSubscribe(&mqttClient, value->options.mqtt_subscribe_topic, QOS0, (volatile)messageArrived);
-				if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
-					printf("MQTT subscribe error - ret : %d\r\n", ret);
+					if(strlen(value->options.mqtt_subscribe_topic) > 0) {
+						ret = MQTTSubscribe(&mqttClient, value->options.mqtt_subscribe_topic, QOS0, (volatile)dataModeSubscribe);
+#ifdef __DATA_MODE_MQTT_DEBUG__
+						if(ret != SUCCESSS) {
+							printf("MQTT subscribe error - ret : %d\r\n", ret);
+						}
 #endif
+					}
+
 				}
 			}
 		case TCP_CLIENT_MODE:
@@ -669,11 +674,11 @@ static void s2e_sockestablished_process(uint8_t sock)
 				inactive_flag = 0;
 				if(value->network_info[0].working_mode == MQTT) {
 					ret = MQTTDisconnect(&mqttClient);
+#ifdef __DATA_MODE_MQTT_DEBUG__
 					if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
 						printf("MQTT disconnect error - ret : %d\r\n", ret);
-#endif
 					}
+#endif
 				}
 				else
 					disconnect(sock);
@@ -692,11 +697,12 @@ static void s2e_sockestablished_process(uint8_t sock)
 				{
 					if(value->network_info[0].working_mode == MQTT) {
 						ret = MQTTDisconnect(&mqttClient);
+#ifdef __DATA_MODE_MQTT_DEBUG__
 						if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
+
 							printf("MQTT disconnect error - ret : %d\r\n", ret);
-#endif
 						}
+#endif
 					}
 					else
 						disconnect(sock);
@@ -705,17 +711,16 @@ static void s2e_sockestablished_process(uint8_t sock)
 
 			if(value->network_info[0].working_mode == MQTT) {
 				ret = MQTTYield(&mqttClient, mqttConnectData.keepAliveInterval);
+#ifdef __DATA_MODE_MQTT_DEBUG__
 				if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
 					printf("MQTT yield error - ret : %d\r\n", ret);
-#endif
 				}
-				uart_to_ether(sock);
+#endif
 			}
 			else {
 				ether_to_uart(sock);
-				uart_to_ether(sock);
 			}
+			uart_to_ether(sock);
 
 			break;
 
@@ -736,11 +741,12 @@ static void s2e_sockclosewait_process(uint8_t sock)
 	switch(net->working_mode) {
 		case MQTT:
 			ret = MQTTDisconnect(&mqttClient);
+#ifdef __DATA_MODE_MQTT_DEBUG__
 			if(ret != SUCCESSS) {
-#ifdef __MQTT_DEBUG__
 				printf("MQTT disconnect error - ret : %d\r\n", ret);
-#endif
 			}
+#endif
+			close(sock);
 			break;
 		case TCP_CLIENT_MODE:
 		case TCP_SERVER_MODE:
