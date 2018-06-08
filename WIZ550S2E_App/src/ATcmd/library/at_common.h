@@ -29,6 +29,10 @@
 #include "util.h"
 #include "../../Ethernet/socket.h"
 #include "sockutil.h"
+#include "mqtt_interface.h"
+#include "MQTTClient.h"
+#include "ConfigData.h"
+#include "cmdrun.h"
 #ifdef USE_DHCP
 #include "protocol/DHCP/dhcp.h"
 #else
