@@ -108,6 +108,9 @@ struct atc_info {
 	int8_t mode;		// Reserved
 	int8_t poll;
 	int8_t country;	// Reserved
+
+	uint8_t mqtt_run;
+	uint8_t mqtt_con;
 };
 
 extern struct atc_info atci;
@@ -165,8 +168,11 @@ void act_fdns(char *url);
 //void act_fgpio(void);
 //void act_eset(void);
 //void act_estat(void);
-
-
+void act_mqttset_q(void);
+void act_mqttset_a(uint8_t *mqttUser, uint8_t mqttUserLen, uint8_t *mqttPass, uint8_t mqttPassLen, uint8_t *mqttId, uint8_t mqttIdLen);
+void act_mqttcon_q(void);
+void act_mqttcon_a(uint16_t sport,uint8_t *broketIpPtr, uint16_t brokertPort);
+void act_mqtt_sub(uint8_t type);
 #endif	//_CMDRUN_H
 
 

@@ -17,6 +17,8 @@
 #include "DNS/dns.h"
 #include "uartHandler.h"
 #include "timerHandler.h"
+#include "mqtt_interface.h"
+#include "MQTTClient.h"
 
 #define SOCK_STAT_TCP_MASK	0x2
 #define SOCK_STAT_PROTMASK	0x3
@@ -54,6 +56,48 @@ static uint16_t udpport[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO]  = {0,};	// to store UDP
 static int8_t   recvflag[ATC_SOCK_NUM_TOTAL+ATC_SOCK_AO] = {0,};	// for recv check
 
 extern int32_t checkAtcUdpSendStatus;
+
+extern Network mqttNetwork;
+extern MQTTClient mqttClient;
+
+extern uint8_t mqttInit;
+
+static void actModeSubscribe(MessageData* md)
+{
+	uint16_t subMessagelen = 0;
+	uint16_t sentlen=0, rbret=0;
+	MQTTMessage* mqttSubMessage = md->message;
+	subMessagelen = (int)mqttSubMessage->payloadlen;
+
+	if(atci.mqtt_run == 0) {
+		cmd_resp(RET_NOT_CONN, VAL_NONE);
+		return;
+	}
+
+	if(subMessagelen > WORK_BUF_SIZE)
+		subMessagelen = WORK_BUF_SIZE;
+
+	memcpy(atci.recvbuf, (char*)mqttSubMessage->payload, subMessagelen);
+
+	MAKE_TCMD_DIGIT(atci.tcmd.arg1, subMessagelen);
+	cmd_resp(RET_RECV, 0);
+	ARG_CLEAR(atci.tcmd.arg1);
+	ARG_CLEAR(atci.tcmd.arg2);
+	ARG_CLEAR(atci.tcmd.arg3);
+
+	while (RingBuffer_IsEmpty(&txring)==0) {
+
+	}
+
+	while (subMessagelen != sentlen) {
+		rbret = UART_write(atci.recvbuf+sentlen, subMessagelen-sentlen);
+		sentlen += rbret;
+	}
+
+	UART_write("\r\n", 2);
+
+	return;
+}
 
 static int8_t sock_get(int8_t initval, uint16_t srcport)
 {
@@ -163,7 +207,9 @@ void atc_async_cb(uint8_t sock, uint8_t item, int32_t ret)
 		}
 		break;
 	case WATCH_SOCK_RECV:	DBG("WATCH_SOCK_RECV");
-		act_nrecv(sock, WORK_BUF_SIZE);
+		if(atci.mqtt_run == 0) {
+			act_nrecv(sock, WORK_BUF_SIZE);
+		}
 		break;
 	default: CRITICAL_ERRA("wrong item(0x%x)", item);
 	}
@@ -466,10 +512,19 @@ void act_nclose(uint8_t sock)
 	} else if(sockstat[sock] == SOCK_STAT_IDLE) {
 		cmd_resp(RET_SOCK_CLS, VAL_NONE);
 	} else if(sockstat[sock] & SOCK_STAT_TCP_MASK) {
-		ret = disconnect(sock);
-		if(ret != SOCK_BUSY && ret != SOCK_OK) {
-			cmd_resp(RET_SOCK_CLS, VAL_NONE);
-			return;
+		if(atci.mqtt_run == 1) {
+			ret = MQTTDisconnect(&mqttClient);
+			if(ret != SUCCESSS) {
+				cmd_resp(RET_SOCK_CLS, VAL_NONE);
+				return;
+			}
+			atci.mqtt_run = 0;
+		} else {
+			ret = disconnect(sock);
+			if(ret != SOCK_BUSY && ret != SOCK_OK) {
+				cmd_resp(RET_SOCK_CLS, VAL_NONE);
+				return;
+			}
 		}
 		sockwatch_clr(sock, WATCH_SOCK_CLS_EVT);
 		sockwatch_set(sock, WATCH_SOCK_CLS_TRY);
@@ -544,22 +599,52 @@ void act_nsend(uint8_t sock, int8_t *buf, uint16_t len, uint8_t *dip, uint16_t *
 	uint16_t availlen = 0;
 	uint8_t io_mode;
 
+	MQTTMessage mqttPubMessage;
+	char *mqtt_buf_ptr;
+	struct __options *option = (struct __options *)&get_S2E_Packet_pointer()->options;
+
 	if(sockstat[sock] & SOCK_STAT_TCP_MASK) {	// TCP
 		io_mode = SOCK_IO_NONBLOCK;
 		ctlsocket(sock, CS_SET_IOMODE, &io_mode);
 
-		ret = send(sock, (uint8_t *)buf, len);
-
-		io_mode = SOCK_IO_BLOCK;
-		ctlsocket(sock, CS_SET_IOMODE, &io_mode);
-
-		if(ret == SOCK_BUSY) {
-			getsockopt(sock, SO_SENDBUF, &availlen);
-			CRITICAL_ERRA("Impossible TCP send busy - len(%d), avail(%d)", len, availlen);
+		if(atci.mqtt_run == 1) {
+			mqtt_buf_ptr = (char *)malloc(sizeof(char)*len);
+			if(mqtt_buf_ptr == NULL) {
+#ifdef __ATC_MODE_MQTT_DEBUG__
+				printf("MQTT Out of memory for publish\r\n");
+#endif
+				return;
+			}
+			memcpy(mqtt_buf_ptr, buf, len);
+			mqttPubMessage.payload		= mqtt_buf_ptr;
+			mqttPubMessage.payloadlen	= len;
+			mqttPubMessage.qos			= QOS0;
+			mqttPubMessage.retained		= 0;
+			mqttPubMessage.dup			= 0;
+			ret = MQTTPublish(&mqttClient, option->mqtt_publish_topic, &mqttPubMessage);
+			free(mqtt_buf_ptr);
+			if(ret != SUCCESSS) {
+#ifdef __ATC_MODE_MQTT_DEBUG__
+				printf("MQTT publish error - ret : %d\r\n", ret);
+#endif
+				cmd_resp(RET_NOT_CONN, VAL_NONE);
+				return;
+			}
 		}
-		if(ret < SOCK_BUSY) {
-			cmd_resp(RET_NOT_CONN, VAL_NONE);
-			return;
+		else {
+			ret = send(sock, (uint8_t *)buf, len);
+
+			io_mode = SOCK_IO_BLOCK;
+			ctlsocket(sock, CS_SET_IOMODE, &io_mode);
+
+			if(ret == SOCK_BUSY) {
+				getsockopt(sock, SO_SENDBUF, &availlen);
+				CRITICAL_ERRA("Impossible TCP send busy - len(%d), avail(%d)", len, availlen);
+			}
+			if(ret < SOCK_BUSY) {
+				cmd_resp(RET_NOT_CONN, VAL_NONE);
+				return;
+			}
 		}
 		sockbusy[sock] = VAL_FALSE;
 		cmd_resp(RET_OK, sock);
@@ -740,7 +825,10 @@ void act_nsock(int8_t sock)
 				}
 			} else {
 				if((sockstat[i]&SOCK_STAT_PROTMASK)==SOCK_STAT_TCP_SRV) type = 'S';
-				else type='C';
+				else {
+					if(atci.mqtt_run == 1) type='Q';
+					else type='C';
+				}
 				if(sockstat[i] & SOCK_STAT_CONNECTED) {		//DBGA("T1s-cnt(%d)-0x%02x-0x%02x-0x%02x-0x%02x", dump_idx, dump[dump_idx], dump[dump_idx+1], dump[dump_idx+2], dump[dump_idx+3]);
 					getsockopt(i, SO_DESTIP, tip);
 					getsockopt(i, SO_DESTPORT, &tport);
@@ -771,8 +859,14 @@ void act_nsock(int8_t sock)
 			} else {
 				if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_TCP_SRV)
 					sprintf((char*)atci.tcmd.arg1, "%c", 'S');
-				else if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_TCP_CLT)
-					sprintf((char*)atci.tcmd.arg1, "%c", 'C');
+				else if((sockstat[sock] & SOCK_STAT_PROTMASK) == SOCK_STAT_TCP_CLT) {
+					if(atci.mqtt_run == 1) {
+						sprintf((char*)atci.tcmd.arg1, "%c", 'Q');
+					}
+					else {
+						sprintf((char*)atci.tcmd.arg1, "%c", 'C');
+					}
+				}
 				else CRITICAL_ERRA("wrong sock state(0x%d)", sockstat[sock]);
 				sprintf((char*)atci.tcmd.arg2, "%d", sockport[sock]);
 				if(sockstat[sock] & SOCK_STAT_CONNECTED) {
@@ -863,7 +957,13 @@ void act_mdata(void)
 
 	getsockopt(SOCK_DATA, SO_STATUS, &sock_state);
 
-	disconnect(SOCK_DATA);
+
+	if(atci.mqtt_run == 1) {
+		MQTTDisconnect(&mqttClient);
+		atci.mqtt_run = 0;
+	} else {
+		disconnect(SOCK_DATA);
+	}
 
 	UART_buffer_flush(&rxring);
 	UART_buffer_flush(&txring);
@@ -1028,4 +1128,116 @@ void act_fdns(char *url)
 		}
 	}
 	value->options.dns_use = backup;
+}
+
+void act_mqttset_q(void)
+{
+	S2E_Packet *value = get_S2E_Packet_pointer();
+
+	MAKE_TCMD_STRING(atci.tcmd.arg1, strlen(value->options.mqtt_user), value->options.mqtt_user);
+	MAKE_TCMD_STRING(atci.tcmd.arg2, strlen(value->options.mqtt_pw), value->options.mqtt_pw);
+	MAKE_TCMD_STRING(atci.tcmd.arg3, strlen(value->module_name), value->module_name);
+
+	cmd_resp(RET_OK, VAL_NONE);
+
+	ARG_CLEAR(atci.tcmd.arg1);
+	ARG_CLEAR(atci.tcmd.arg2);
+	ARG_CLEAR(atci.tcmd.arg3);
+}
+
+void act_mqttset_a(uint8_t *mqttUser, uint8_t mqttUserLen, uint8_t *mqttPass, uint8_t mqttPassLen, uint8_t *mqttId, uint8_t mqttIdLen)
+{
+	S2E_Packet *value = get_S2E_Packet_pointer();
+
+	memset(value->options.mqtt_user, '\0', PASS_LEN);
+	memset(value->options.mqtt_pw, '\0', PASS_LEN);
+	memset(value->module_name, '\0', NAME_LEN);
+
+	memcpy(value->options.mqtt_user, mqttUser, mqttUserLen);
+	memcpy(value->options.mqtt_pw, mqttPass, mqttPassLen);
+	memcpy(value->module_name, mqttId, mqttIdLen);
+
+	save_S2E_Packet_to_eeprom();
+
+	cmd_resp(RET_OK, VAL_NONE);
+}
+
+void act_mqttcon_q(void)
+{
+	cmd_resp(RET_NOT_ALLOWED, VAL_NONE);
+}
+
+void act_mqttcon_a(uint16_t sport, uint8_t *brokerIpPtr, uint16_t brokerPort)
+{
+	int8_t sock, i;
+	int8_t ret;
+
+	for(i=ATC_SOCK_NUM_START; i<=ATC_SOCK_NUM_END; i++) {
+		if(sockstat[i] != SOCK_STAT_IDLE && sockport[i] == sport) {
+			DBGA("src port(%d) is using now by sock(%d)", sport, i);
+			MAKE_TCMD_DIGIT(atci.tcmd.arg1, 2);
+			cmd_resp(RET_USING_PORT, VAL_NONE);
+			ARG_CLEAR(atci.tcmd.arg1);
+			return;
+		}
+	}
+
+	sock = sock_get(SOCK_STAT_TCP_CLT, sport);
+	if(sock == RET_NOK) {
+		cmd_resp(RET_NO_SOCK, VAL_NONE);
+		return;
+	}
+
+	if(mqttInit == 0) {
+		mqttInit = 1;
+		NewNetwork(&mqttNetwork, sock);
+	}
+	mqttNetwork.my_socket = sock;
+	MQTTClientInit(&mqttClient, &mqttNetwork, 1000, atci.sendbuf, WORK_BUF_SIZE, atci.recvbuf, WORK_BUF_SIZE);
+	InitNetwork(&mqttNetwork, sport, SF_IO_NONBLOCK);
+	ret = ConnectNetwork(&mqttNetwork, brokerIpPtr, brokerPort);
+	if(ret != SOCK_BUSY && ret != SOCK_OK) {
+		DBGA("connect fail - ret(%d)", ret);
+		cmd_resp(RET_WRONG_ADDR, VAL_NONE);
+		return;
+	} else {
+		atci.mqtt_con = 1;
+	}
+	sockwatch_set(sock, WATCH_SOCK_CONN_TRY);
+	sockbusy[sock] = VAL_TRUE;
+	cmd_resp(RET_ASYNC, sock);
+	ARG_CLEAR(atci.tcmd.arg1);
+	return;
+}
+
+void act_mqtt_sub(uint8_t type){
+
+	int32_t ret;
+
+	struct __options *option = (struct __options *)&(get_S2E_Packet_pointer()->options);
+
+	if(atci.mqtt_run == 0) {
+		cmd_resp(RET_NOT_CONN, VAL_NONE);
+		return;
+	}
+
+	if(type == 1) {
+		ret = MQTTSubscribe(&mqttClient, option->mqtt_subscribe_topic, QOS0, (volatile)actModeSubscribe);
+#ifdef __ATC_MODE_MQTT_DEBUG__
+		if(ret != SUCCESSS) {
+			printf("MQTT subscribe error - ret : %d\r\n", ret);
+		}
+#endif
+	}
+	else if(type == 0) {
+		ret = MQTTUnsubscribe(&mqttClient, option->mqtt_subscribe_topic);
+#ifdef __ATC_MODE_MQTT_DEBUG__
+		if(ret != SUCCESSS) {
+			printf("MQTT subscribe error - ret : %d\r\n", ret);
+		}
+#endif
+		mqttClient.messageHandlers[0].topicFilter = '\0';
+	}
+
+	cmd_resp(ret, VAL_NONE);
 }

@@ -18,6 +18,8 @@
 #include "cmdrun.h"
 #include "ConfigData.h"
 #include "uartHandler.h"
+#include "mqtt_interface.h"
+#include "MQTTClient.h"
 
 #define CMD_CLEAR() { \
 	atci.tcmd.op[0] =   atci.tcmd.sign =    atci.tcmd.arg1[0] = atci.tcmd.arg2[0] = 0; \
@@ -76,6 +78,10 @@ static void hdl_mname(void);
 static void hdl_fdns(void);
 static void hdl_estat(void);
 
+static void hdl_mqttset(void);
+static void hdl_mqttcon(void);
+static void hdl_mqttpub(void);
+static void hdl_mqttsub(void);
 
 #define ATCMD_BUF_SIZE		100
 #define PREVBUF_MAX_SIZE	250
@@ -112,6 +118,11 @@ const struct at_command g_cmd_table[] =
 
 	{ "FDNS",		hdl_fdns,	 	NULL, NULL },
 
+	{ "MQTTSET",	hdl_mqttset,	NULL, NULL },
+	{ "MQTTCON",	hdl_mqttcon,	NULL, NULL },
+	{ "MQTTPUB",	hdl_mqttpub,	NULL, NULL },
+	{ "MQTTSUB",	hdl_mqttsub,	NULL, NULL },
+
 	{ NULL, NULL, NULL, NULL }	// Should be last item
 };
 
@@ -138,6 +149,9 @@ void atc_init()
 	atci.poll = POLL_MODE_SEMI;
 	atci.sendbuf = g_send_buf;
 	atci.recvbuf = g_recv_buf;
+
+	atci.mqtt_con = 0;
+	atci.mqtt_run = 0;
 
 	sockwatch_open(0, atc_async_cb);	// Assign socket 1 to ATC module
 
@@ -1069,4 +1083,195 @@ static void hdl_fdns(void)
 static void hdl_estat(void)
 {
 	RESP_CR(RET_NOT_ALLOWED);
+}
+
+static void hdl_mqttset(void)
+{
+	char mqttUser[MQTT_ACCOUNT_LEN] = {'\0',};
+	char mqttPass[MQTT_ACCOUNT_LEN] = {'\0',};
+	char mqttId[NAME_LEN] = {'\0',};
+
+	uint8_t *mqttUserPtr = NULL;
+	uint8_t *mqttPassPtr = NULL;
+	uint8_t *mqttIdPtr = NULL;
+
+	uint8_t mqttUserLen, mqttPassLen, mqttIdLen;
+
+	uint8_t i;
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;
+
+	if(atci.tcmd.sign == CMD_SIGN_QUEST) {
+		CMD_CLEAR();
+		act_mqttset_q();
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL) {
+
+		mqttUserLen = strlen(atci.tcmd.arg1);
+		mqttPassLen = strlen(atci.tcmd.arg2);
+		mqttIdLen = strlen(atci.tcmd.arg3);
+
+		if(mqttUserLen > (MQTT_ACCOUNT_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 1);
+		if(mqttPassLen > (MQTT_ACCOUNT_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 1);
+		if(mqttIdLen > (NAME_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 1);
+
+		for(i=0; i < mqttUserLen; i++) {
+			mqttUser[i] = atci.tcmd.arg1[i];
+		}
+		for(i=0; i < mqttPassLen; i++) {
+			mqttPass[i] = atci.tcmd.arg2[i];
+		}
+		for(i=0; i < mqttIdLen; i++) {
+			mqttId[i] = atci.tcmd.arg3[i];
+		}
+
+		mqttUserPtr = mqttUser;
+		mqttPassPtr = mqttPass;
+		mqttIdPtr	= mqttId;
+
+		CMD_CLEAR();
+
+		act_mqttset_a(mqttUserPtr, mqttUserLen, mqttPassPtr, mqttPassLen, mqttIdPtr, mqttIdLen);
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
+}
+
+static void hdl_mqttcon(void)
+{
+	int8_t type=0;
+	uint8_t brokerIp[4] = {0,};
+	uint8_t *brokerIpPtr = NULL;
+	uint16_t brokertPort = 0;
+	uint16_t SrcPort;
+	int8_t num = 0;
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) atci.tcmd.sign = CMD_SIGN_QUEST;
+	if(atci.tcmd.sign == CMD_SIGN_QUEST)
+	{
+		CMD_CLEAR();
+		act_mqttcon_q();
+	}
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
+	{
+		//choice connect = 1, disconnect = 0
+		if(str_check(isdigit, atci.tcmd.arg1) != RET_OK) RESP_CDR(RET_WRONG_ARG, 1);
+		if(CHK_DGT_RANGE(atci.tcmd.arg1, num, 0, 1)) RESP_CDR(RET_RANGE_OUT, 1);
+		else type = num;
+
+		if(type == 1) {
+			//setting mqtt broker ip and check
+			if(ip_check(atci.tcmd.arg2, brokerIp) != RET_OK) RESP_CDR(RET_WRONG_ARG, 2);
+			//setting mqtt broker port and check
+			if(port_check(atci.tcmd.arg3, &brokertPort) != RET_OK) RESP_CDR(RET_WRONG_ARG, 3);
+			brokerIpPtr = brokerIp;
+			SrcPort = client_port;
+			CMD_CLEAR();
+			act_mqttcon_a(SrcPort, brokerIpPtr, brokertPort);
+		} else if(type == 0) {
+			CMD_CLEAR();
+			act_nclose(num);
+			if(client_port == 65535)
+				client_port = 2000;
+			else
+				client_port++;
+		}
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
+}
+
+static void hdl_mqttpub(void)
+{
+	int8_t num = -1;
+	int32_t ret;
+	uint8_t *dip = NULL;
+	uint16_t *dport = NULL;
+
+	uint8_t mqttPublishTopicLen;
+	uint8_t i;
+
+	struct __options *option = (struct __options *)&(get_S2E_Packet_pointer()->options);
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) RESP_CR(RET_WRONG_SIGN);
+	if(atci.tcmd.sign == CMD_SIGN_QUEST) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
+	{
+		//choice socket id(num)
+		if(atci.tcmd.arg1[0] != 0) {
+			if(str_check(isdigit, atci.tcmd.arg1) != RET_OK) RESP_CDR(RET_WRONG_ARG, 1);
+			if(CHK_DGT_RANGE(atci.tcmd.arg1, num, ATC_SOCK_NUM_START, ATC_SOCK_NUM_END))
+				RESP_CDR(RET_RANGE_OUT, 1);
+		}
+
+		//setting mqtt publish topic
+		if(atci.tcmd.arg2[0] != 0) {
+			mqttPublishTopicLen = strlen(atci.tcmd.arg2);
+			if(mqttPublishTopicLen > (MQTT_TOPIC_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 2);
+			memset(option->mqtt_publish_topic, '\0', MQTT_TOPIC_LEN);
+			for(i=0; i < mqttPublishTopicLen; i++) {
+				option->mqtt_publish_topic[i] = atci.tcmd.arg2[i];
+				save_S2E_Packet_to_eeprom();
+			}
+		}
+		else {
+			if(strlen(option->mqtt_publish_topic) == 0) RESP_CDR(RET_WRONG_ARG, 2);
+		}
+
+		//setting size
+		if(str_check(isdigit, atci.tcmd.arg3) != RET_OK ||
+			(atci.sendlen = atoi((char*)atci.tcmd.arg3)) < 1 ||
+			atci.sendlen > WORK_BUF_SIZE) RESP_CDR(RET_RANGE_OUT, 3);
+
+		CMD_CLEAR();
+		ret = act_nsend_chk(num, &atci.sendlen, dip, dport);
+		if(ret != RET_OK) return;
+
+		atci.sendsock = num;	// 유효성 검사가 완료되면 SEND모드로 전환
+		atci.worklen = 0;
+		cmd_resp(RET_ASYNC, num);
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
+}
+
+static void hdl_mqttsub(void)
+{
+	int8_t type=0;
+	int8_t num = -1;
+	int32_t ret;
+
+	uint8_t mqttSubscribeTopicLen;
+	uint8_t i;
+
+	struct __options *option = (struct __options *)&(get_S2E_Packet_pointer()->options);
+
+	if(atci.tcmd.sign == CMD_SIGN_NONE) RESP_CR(RET_WRONG_SIGN);
+	if(atci.tcmd.sign == CMD_SIGN_QUEST) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_INDIV) RESP_CR(RET_WRONG_SIGN);
+	else if(atci.tcmd.sign == CMD_SIGN_EQUAL)
+	{
+		//choice subscribe = 1, unsubscribe = 0
+		if(str_check(isdigit, atci.tcmd.arg1) != RET_OK) RESP_CDR(RET_WRONG_ARG, 1);
+		if(CHK_DGT_RANGE(atci.tcmd.arg1, num, 0, 1)) RESP_CDR(RET_RANGE_OUT, 1);
+		else type = num;
+
+		//setting mqtt subscribe topic
+		if(atci.tcmd.arg2[0] != 0) {
+			mqttSubscribeTopicLen = strlen(atci.tcmd.arg2);
+			if(mqttSubscribeTopicLen > (MQTT_TOPIC_LEN - 1)) RESP_CDR(RET_RANGE_OUT, 2);
+			memset(option->mqtt_subscribe_topic, '\0', MQTT_TOPIC_LEN);
+			for(i=0; i < mqttSubscribeTopicLen; i++) {
+				option->mqtt_subscribe_topic[i] = atci.tcmd.arg2[i];
+			}
+		}
+		else {
+			if(strlen(option->mqtt_subscribe_topic) == 0) RESP_CDR(RET_WRONG_ARG, 2);
+		}
+
+		act_mqtt_sub(type);
+
+		CMD_CLEAR();
+	}
+	else CRITICAL_ERRA("wrong sign(%d)", atci.tcmd.sign);
 }

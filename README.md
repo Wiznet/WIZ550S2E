@@ -137,6 +137,14 @@ Install JAVA Runtime Environment
 
 ## Revision History
 
+### v1.3.0
+
+- Added features
+	- AT+MQTTSET : (AT command) This command is used to initialize the necessary parameters of MQTT connection(set information automatically saved)
+	- AT+MQTTCON : (AT command) Implement MQTT to connect the Broker
+	- AT+MQTTPUB : (AT command) Publish the message to subscribed Client(set topic automatically saved)
+	- AT+MQTTSUB : (AT command) Such topics will be pushed to the WIZ550S2E when received by the Broker(set topic automatically saved)
+
 ### v1.2.2
 
 - Fixed bugs
