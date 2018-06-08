@@ -137,13 +137,20 @@ Install JAVA Runtime Environment
 
 ## Revision History
 
+### v1.2.2
+
+- Fixed bugs
+	- Fixed a bug that vector relocation RAM problem due to buffer initialization
+	- Fixed a bug that MQTT connection message transmission when operating as a TCP server
+	- Fixed a bug that MQTT subscription setting error when there is no topic
+
 ### v1.2.1
 
 - Fixed bugs
-	- Fixed a bug that stops when the module switches to data mode and at-command mode.
+	- Fixed a bug that stops when the module switches to data mode and at-command mode
 	- The MQTT socket has been modified to open as a nonblock.
-	- Modified the memory used for MQTT publishing from static to dynamic allocation.
-	- Fixed to update connection LED and network state when switching to at-command mode.
+	- Modified the memory used for MQTT publishing from static to dynamic allocation
+	- Fixed to update connection LED and network state when switching to at-command mode
 
 ### v1.2.0
 
