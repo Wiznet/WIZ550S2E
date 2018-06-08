@@ -706,6 +706,9 @@ static void hdl_nsock(void)
 			if(CHK_DGT_RANGE(atci.tcmd.arg1, num, ATC_SOCK_NUM_START, ATC_SOCK_NUM_END)) 
 				RESP_CDR(RET_RANGE_OUT, 1);
 		}
+		else {
+			RESP_CDR(RET_WRONG_ARG, 1);
+		}
 		CMD_CLEAR();
 		act_nsock(num);
 	}

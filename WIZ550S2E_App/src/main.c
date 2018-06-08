@@ -44,8 +44,8 @@ static int vector_in_ram[52] __attribute__((section ("vtable")));
 /*****************************************************************************
  * Public types/enumerations/variables
  ****************************************************************************/
-uint8_t g_send_buf[WORK_BUF_SIZE] = {'\0',};
-uint8_t g_recv_buf[WORK_BUF_SIZE] = {'\0',};
+uint8_t g_send_buf[WORK_BUF_SIZE];
+uint8_t g_recv_buf[WORK_BUF_SIZE];
 
 uint8_t run_dns = 1;
 uint8_t op_mode;

@@ -42,7 +42,6 @@
 
 #include "mqtt_interface.h"
 #include "wizchip_conf.h"
-#include "socket.h"
 
 unsigned long MilliTimer;
 
@@ -157,11 +156,11 @@ void w5x00_disconnect(Network* n)
  * @brief initial network function
  * @param  n : pointer to a Network structure
  */
-int InitNetwork(Network* n)
+int InitNetwork(Network* n, unsigned int port, unsigned char mode)
 {
 	int ret = 0;
 
-	ret = socket(n->my_socket, Sn_MR_TCP, 0, SF_IO_NONBLOCK);
+	ret = socket(n->my_socket, Sn_MR_TCP, port, mode);
 
 	return ret;
 }
@@ -172,7 +171,7 @@ int InitNetwork(Network* n)
  *         ip : server iP.
  *         port : server port.
  */
-int ConnectNetwork(Network* n, unsigned char* ip, int port)
+int ConnectNetwork(Network* n, unsigned char* ip, unsigned int port)
 {
 	int ret = 0;
 
