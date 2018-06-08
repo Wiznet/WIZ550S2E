@@ -430,6 +430,7 @@ void act_nopen_a(int8_t type, uint16_t sport, uint8_t *dip, uint16_t dport)
 			MAKE_TCMD_DIGIT(atci.tcmd.arg1, sock);
 			cmd_resp(RET_OK, VAL_NONE);
 			break;
+		case MQTT:
 		case TCP_MIXED_MODE:
 			cmd_resp(RET_NOT_ALLOWED, VAL_NONE);
 			break;

@@ -87,7 +87,7 @@ int w5x00_read(Network*, unsigned char*, int);
 int w5x00_write(Network*, unsigned char*, int);
 void w5x00_disconnect(Network*);
 void NewNetwork(Network*, int);
-int InitNetwork(Network*);
-int ConnectNetwork(Network*, unsigned char*, int);
+int InitNetwork(Network*, unsigned int, unsigned char);
+int ConnectNetwork(Network*, unsigned char*, unsigned int);
 
 #endif //__MQTT_INTERFACE_H_
