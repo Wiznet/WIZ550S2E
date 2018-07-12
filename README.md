@@ -137,6 +137,10 @@ Install JAVA Runtime Environment
 
 ## Revision History
 
+<p align="left">
+  <img width="100%" src="https://wizwiki.net/wiki/lib/exe/fetch.php?media=products:wiz550s2e:new_wireframe_2.png" />
+</p>
+
 ### v1.3.0
 
 - Added features
