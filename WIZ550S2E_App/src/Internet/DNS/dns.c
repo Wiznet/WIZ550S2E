@@ -120,6 +120,7 @@ uint8_t  DNS_SOCKET;    // SOCKET number for DNS
 uint16_t DNS_MSGID;     // DNS message ID
 
 uint32_t dns_1s_tick;   // for timout of DNS processing
+static uint8_t retry_count;
 
 /* converts uint16_t from network buffer to a host byte order integer. */
 uint16_t get16(uint8_t * s)
@@ -327,9 +328,9 @@ uint8_t * dns_answer(uint8_t * msg, uint8_t * cp, uint8_t * ip_from_dns)
  * Arguments   : dhdr - is a pointer to the header for DNS message
  *               buf  - is a pointer to the reply message.
  *               len  - is the size of reply message.
- * Returns     : -1 - Domain name lenght is too big 
- *                0 - Fail (Timout or parse error)
- *                1 - Success, 
+ * Returns     : -1 - Domain name length is too big
+ *                0 - Fail (Timeout or parse error)
+ *                1 - Success
  */
 int8_t parseDNSMSG(struct dhdr * pdhdr, uint8_t * pbuf, uint8_t * ip_from_dns)
 {
@@ -472,7 +473,6 @@ int16_t dns_makequery(uint16_t op, char * name, uint8_t * buf, uint16_t len)
 
 int8_t check_DNS_timeout(void)
 {
-	static uint8_t retry_count;
 
 	if(dns_1s_tick >= DNS_WAIT_TIME)
 	{
@@ -496,50 +496,59 @@ void DNS_init(uint8_t s, uint8_t * buf)
 	DNS_SOCKET = s; // SOCK_DNS
 	pDNSMSG = buf; // User's shared buffer
 	DNS_MSGID = DNS_MSG_ID;
+	retry_count = 0;
 }
 
-/* DNS CLIENT RUN */
+/* DNS CLIENT RUN
+ * Description : This function sends the DNS query and waits for a reply
+ * Arguments   : dns_ip - server IP address
+ *               name  - name to resolve into IP
+ *               ip_from_dns - reply: IP resolved from name
+ * Returns     : -1 - Domain name length is too big
+ *                0 - Fail (Timeout or parse error)
+ *                1 - Success
+ */
 int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
 {
-	int8_t ret;
+	int8_t ret = 0;
 	struct dhdr dhp;
 	uint8_t ip[4];
 	uint16_t len, port;
 	int8_t ret_check_timeout;
    
-   // Socket open
-   socket(DNS_SOCKET, Sn_MR_UDP, 0, 0);
+	// Socket open
+	socket(DNS_SOCKET, Sn_MR_UDP, 0, 0);
 
 #ifdef _DNS_DEBUG_
 	printf("> DNS Query to DNS Server : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
+	printf("> Domain : %s\r\n", name);
 #endif
-   
+	
 	len = dns_makequery(0, (char *)name, pDNSMSG, MAX_DNS_BUF_SIZE);
 	sendto(DNS_SOCKET, pDNSMSG, len, dns_ip, IPPORT_DOMAIN);
 
 	while (1)
-	{
+	{//Wait here until we get a reply or timeout
 		if ((len = getSn_RX_RSR(DNS_SOCKET)) > 0)
-		{
+		{//Got a reply
 			if (len > MAX_DNS_BUF_SIZE) len = MAX_DNS_BUF_SIZE;
 			len = recvfrom(DNS_SOCKET, pDNSMSG, len, ip, &port);
-      #ifdef _DNS_DEBUG_
-	      printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
-      #endif
-         ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
+#ifdef _DNS_DEBUG_
+			printf("> Receive DNS message from %d.%d.%d.%d(%d). len = %d\r\n", ip[0], ip[1], ip[2], ip[3],port,len);
+#endif
+			ret = parseDNSMSG(&dhp, pDNSMSG, ip_from_dns);
 			break;
 		}
 		// Check Timeout
 		ret_check_timeout = check_DNS_timeout();
 		if (ret_check_timeout < 0) {
-
 #ifdef _DNS_DEBUG_
 			printf("> DNS Server is not responding : %d.%d.%d.%d\r\n", dns_ip[0], dns_ip[1], dns_ip[2], dns_ip[3]);
 #endif
-			return 0; // timeout occurred
+			ret = 0; // timeout occurred
+			break;
 		}
 		else if (ret_check_timeout == 0) {
-
 #ifdef _DNS_DEBUG_
 			printf("> DNS Timeout\r\n");
 #endif
@@ -547,8 +556,6 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns)
 		}
 	}
 	close(DNS_SOCKET);
-	// Return value
-	// 0 > :  failed / 1 - success
 	return ret;
 }
 
