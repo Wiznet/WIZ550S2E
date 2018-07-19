@@ -172,7 +172,7 @@ https://github.com/Wiznet/WIZ550S2E-Modbus
 
 - Added features
 	- MQTT
-		- v1.10 Configuration Tool is required.
+		- [v1.10 Configuration Tool](https://github.com/Wiznet/WIZnet_Configuration_Tool) is required.
 
 ### v1.1.5
 
