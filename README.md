@@ -1,6 +1,14 @@
+- [WIZ550S2E](#wiz550s2e)
+	- [Firmware](#firmware)
+	- [Module and Interface boards](#module-and-interface-boards)
+	- [Configuration Tool](#configuration-tool)
+	- [Revision History](#revision-history)
+
+----
+
 # WIZ550S2E
 
-Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0
+Serial to Ethernet Module based on [W5500](http://wizwiki.net/wiki/doku.php?id=products:w5500:start) & Cortex-M0.
 
 ## Firmware
 
@@ -12,7 +20,7 @@ Firmware source code are two types as follows.
 - Application
 - Bootloader
 
-**The order of compile**
+### The order of compile
 
 1. lpc_chip_11exx.
 2. wiznet_s2e_wiz550s2e_board.
@@ -21,40 +29,44 @@ Firmware source code are two types as follows.
 
 ![s2e](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428621268&w=499&h=203&tok=26df60&media=products:wiz550s2e:s2e.png "s2e")
 
-**Firmware download**
+### Firmware download
 
 In this case there is only just [.hex file.](https://github.com/Wiznet/WIZ550S2E/releases)
 
-If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download), look at the following that : Configuration Tool/FW Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download)
+If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download), look at the following that: 
 
-1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.
+  * Configuration Tool F/W Uploading in [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download)
+
+**1. Connect WIZ550S2E and RS232I/F board and DC+5V adpater and RS232 serial cable and lan cable.**
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=500&h=374&tok=390d68&media=products:wiz550s2e:wiz550s2e_fw_up_1.png" />
 </p>
 
-2. HW/TRIG switch off.
+**2. HW/TRIG switch off.**
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=378&tok=d39e60&media=products:wiz550s2e:wiz550s2e_fw_up_2.png" />
 </p>
 
-3. Check LED.
+**3. Check LED.**
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087198&w=335&h=242&tok=a856af&media=products:wiz550s2e:wiz550s2e_fw_up_3.png" />
 </p>
 
-4. Short J5 and push reset switch. 
+**4. Short J5 and push reset switch.**
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=373&tok=b6167f&media=products:wiz550s2e:wiz550s2e_fw_up_4.png" />
 </p>
 
-5. firmware download using [Flash Magic](http://www.flashmagictool.com/).
+**5. firmware download using [Flash Magic](http://www.flashmagictool.com/).**
 <p align="left">
   <img width="70%" src="http://wizwiki.net/wiki/lib/exe/fetch.php?t=1434087199&w=500&h=494&tok=4e6a04&media=products:wiz550s2e:wiz550s2e_fw_up_5.png" />
 </p>
 
-6. Must push the "Factory Reset" button on EVB for over 5 seconds.
+**6. Must push the "Factory Reset" button on EVB for over 5 seconds.**
 
-## Images
+----
+
+## Module and Interface boards
 
 ### WIZ550S2E Module
 
@@ -116,26 +128,32 @@ If you would like to use [.bin file](http://wizwiki.net/wiki/doku.php?id=product
 
 For more details, please refer to [WIZ550S2E Wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:start) in [WIZnet Wiki](http://wizwiki.net).
 
+----
+
 ## Configuration Tool
 
 WIZnet Configuration Tool made Java base. so runs on any OS that JRE be installed. 
 
-Install JAVA Runtime Environment 
+**Install JAVA Runtime Environment**
 
-1. [java page](http://www.java.com).
+1. [Java page](http://www.java.com).
 2. Go to the Download tab to download the installation files for the PC environment.
 ![1](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=321&tok=b6bae3&media=products:wiz550s2e:1.png "1")
 3. Install the downloaded installation file.
 4. When you run the Terminal, type the "java -version" command, the following message is displayed.
 ![2](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563628&w=500&h=100&tok=1cadd9&media=products:wiz550s2e:2.png "2")
 5. [WIZ550S2E wiki page](http://wizwiki.net/wiki/doku.php?id=products:wiz550s2e:wiz550s2e_download).
-6. Configuration Tool for WIZ550S2E download.                                     
+6. Download the Configuration Tool for WIZ550S2E.                                     
 ![3](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=375&tok=02960c&media=products:wiz550s2e:3.png "3")
 7. Then Unzipped the downloaded zip file. Excutable jar file is created.
 8. Excute file.
- * Jar file double click at GUI.
- * Type the “java -jar WIZ550S2E_Configuration_Tool.jar” command at Terminal.
+ * Double click the **WIZnet_Configuration_Tool.jar** file.
+  
+	or, 
+ * Type the `java -jar WIZnet_Configuration_Tool.jar` command at Terminal.
 ![4](http://wizwiki.net/wiki/lib/exe/fetch.php?t=1428563629&w=500&h=412&tok=8ab846&media=products:wiz550s2e:4.png "4")
+
+----
 
 ## Revision History
 
