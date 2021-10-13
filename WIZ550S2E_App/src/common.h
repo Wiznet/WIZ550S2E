@@ -23,6 +23,8 @@
 #define APP_BASE		0x6000
 #define WORK_BUF_SIZE	1024
 
+#define WATCHDOG		1	// 0 : disable, 1 : enable
+
 extern uint8_t op_mode;
 
 #endif
