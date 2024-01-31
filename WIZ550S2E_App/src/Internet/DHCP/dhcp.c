@@ -258,7 +258,7 @@ void default_ip_assign(void)
    setGAR (DHCP_allocated_gw);
 }
 
-/* The default handler of ip chaged */
+/* The default handler of ip changed */
 void default_ip_update(void)
 {
 	/* WIZchip Software Reset */
@@ -268,7 +268,7 @@ void default_ip_update(void)
    setSHAR(DHCP_CHADDR);
 }
 
-/* The default handler of ip chaged */
+/* The default handler of ip changed */
 void default_ip_conflict(void)
 {
 	// WIZchip Software Reset
@@ -379,10 +379,16 @@ void send_DHCP_DISCOVER(void)
 	pDHCPMSG->OPT[k++] = 0;          // fill zero length of hostname 
 	for(i = 0 ; HOST_NAME[i] != 0; i++)
    	pDHCPMSG->OPT[k++] = HOST_NAME[i];
+#if 0	// 2014.05.29 sskim
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[3];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[4];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[5];
 	pDHCPMSG->OPT[k - (i+3+1)] = i+3; // length of hostname
+#else
+	sprintf((char *)(pDHCPMSG->OPT + k), "%02X%02X%02X", DHCP_CHADDR[3], DHCP_CHADDR[4], DHCP_CHADDR[5]);
+	k += 6;
+	pDHCPMSG->OPT[k - (i+6+1)] = i+6; // length of hostname
+#endif
 
 	pDHCPMSG->OPT[k++] = dhcpParamRequest;
 	pDHCPMSG->OPT[k++] = 0x06;	// length of request
@@ -478,11 +484,17 @@ void send_DHCP_REQUEST(void)
 	pDHCPMSG->OPT[k++] = 0; // length of hostname
 	for(i = 0 ; HOST_NAME[i] != 0; i++)
    	pDHCPMSG->OPT[k++] = HOST_NAME[i];
+#if 0	// 2014.05.29 sskim
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[3];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[4];
 	pDHCPMSG->OPT[k++] = DHCP_CHADDR[5];
 	pDHCPMSG->OPT[k - (i+3+1)] = i+3; // length of hostname
-	
+#else
+	sprintf((char *)(pDHCPMSG->OPT + k), "%02X%02X%02X", DHCP_CHADDR[3], DHCP_CHADDR[4], DHCP_CHADDR[5]);
+	k += 6;
+	pDHCPMSG->OPT[k - (i+6+1)] = i+6; // length of hostname
+#endif
+
 	pDHCPMSG->OPT[k++] = dhcpParamRequest;
 	pDHCPMSG->OPT[k++] = 0x08;
 	pDHCPMSG->OPT[k++] = subnetMask;
@@ -574,7 +586,7 @@ int8_t parseDHCPMSG(void)
 
 	uint8_t * p;
 	uint8_t * e;
-	uint8_t type;
+	uint8_t type = 0;
 	uint8_t opt_len;
    
    if((len = getSn_RX_RSR(DHCP_SOCKET)) > 0)
@@ -591,7 +603,6 @@ int8_t parseDHCPMSG(void)
 		     (pDHCPMSG->chaddr[2] != DHCP_CHADDR[2]) || (pDHCPMSG->chaddr[3] != DHCP_CHADDR[3]) ||
 		     (pDHCPMSG->chaddr[4] != DHCP_CHADDR[4]) || (pDHCPMSG->chaddr[5] != DHCP_CHADDR[5])   )
          return 0;
-      type = 0;
 		p = (uint8_t *)(&pDHCPMSG->op);
 		p = p + 240;      // 240 = sizeof(RIP_MSG) + MAGIC_COOKIE size in RIP_MSG.opt - sizeof(RIP_MSG.opt)
 		e = p + (len - 240);
@@ -644,9 +655,9 @@ int8_t parseDHCPMSG(void)
    				dhcp_lease_time  = (dhcp_lease_time << 8) + *p++;
    				dhcp_lease_time  = (dhcp_lease_time << 8) + *p++;
    				dhcp_lease_time  = (dhcp_lease_time << 8) + *p++;
-            #ifdef _DHCP_DEBUG_  
-               dhcp_lease_time = 10;
- 				#endif
+#ifdef _DHCP_DEBUG_
+				dhcp_lease_time = 10;
+#endif
    				break;
    			case dhcpServerIdentifier :
    				p++;
@@ -889,7 +900,7 @@ int8_t check_DHCP_leasedIP(void)
 
 		return 0;
 	}
-}	
+}
 
 void DHCP_init(uint8_t s, uint8_t * buf)
 {
@@ -912,7 +923,6 @@ void DHCP_init(uint8_t s, uint8_t * buf)
 	DHCP_XID = 0x12345678;
 
 	// WIZchip Netinfo Clear
-	setSIPR(zeroip);
 	setSIPR(zeroip);
 	setGAR(zeroip);
 
