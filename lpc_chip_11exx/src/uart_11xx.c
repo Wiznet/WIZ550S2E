@@ -252,6 +252,7 @@ uint32_t Chip_UART_SetBaudFDR(LPC_USART_T *pUART, uint32_t baudrate)
 	 * new_mval = mval / dval
 	 * new_dval = 1
 	 */
+	mval = rate16;
 	if (dval > 0) {
 		mval = rate16 / dval;
 		dval = 1;
