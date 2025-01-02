@@ -80,6 +80,44 @@ int main(void)
 	SystemCoreClockUpdate();
 	Board_Init();
 
+#if WATCHDOG
+	uint32_t wdtFreq;
+
+	/* Initialize WWDT (also enables WWDT clock) */
+	Chip_WWDT_Init(LPC_WWDT);
+
+	/* Prior to initializing the watchdog driver, the clocking for the
+	   watchdog must be enabled. This example uses the watchdog oscillator
+	   set at a 50KHz (1Mhz / 20) clock rate. */
+	Chip_SYSCTL_PowerUp(SYSCTL_POWERDOWN_WDTOSC_PD);
+	Chip_Clock_SetWDTOSC(WDTLFO_OSC_1_05, 20);
+
+	/* The WDT divides the input frequency into it by 4 */
+	wdtFreq = Chip_Clock_GetWDTOSCRate() / 4;
+
+	/* Select watchdog oscillator for WDT clock source */
+	Chip_Clock_SetWDTClockSource(SYSCTL_WDTCLKSRC_WDTOSC, 1);
+
+	/* Set watchdog feed time constant to approximately 5s */
+	Chip_WWDT_SetTimeOut(LPC_WWDT, wdtFreq * 1000 * 5);
+
+#if !defined(CHIP_LPC11CXX)
+	/* Configure WWDT to reset on timeout */
+	Chip_WWDT_SetOption(LPC_WWDT, WWDT_WDMOD_WDRESET);
+#endif
+
+	/* Clear watchdog warning and timeout interrupts */
+	Chip_WWDT_ClearStatusFlag(LPC_WWDT, WWDT_WDMOD_WDTOF | WWDT_WDMOD_WDINT);
+
+	/* Clear and enable watchdog interrupt */
+	NVIC_ClearPendingIRQ(WDT_IRQn);
+	NVIC_EnableIRQ(WDT_IRQn);
+
+	/* Start watchdog */
+	Chip_WWDT_Start(LPC_WWDT);
+
+#endif	/* WATCHDOG */
+
 	Board_LED_Set(0, false);
 	Board_LED_Set(1, false);
 
@@ -147,6 +185,11 @@ int main(void)
 
 	op_mode = OP_DATA;
 	while (1) {
+#if WATCHDOG
+
+		Chip_WWDT_Feed(LPC_WWDT);
+#endif	/* WATCHDOG */
+
 		if(op_mode == OP_COMMAND) {			// Command Mode
 			atc_run();
 			sockwatch_run();
@@ -166,7 +209,20 @@ int main(void)
 				run_dns = 0;
 			}
 		}
+#if WATCHDOG
+		/* Clear watchdog warning and timeout interrupts */
+		Chip_WWDT_ClearStatusFlag(LPC_WWDT, WWDT_WDMOD_WDTOF | WWDT_WDMOD_WDINT);
+
+		/* Clear and enable watchdog interrupt */
+		NVIC_ClearPendingIRQ(WDT_IRQn);
+		NVIC_EnableIRQ(WDT_IRQn);
+#endif	/* WATCHDOG */
 	}
+
+#if WATCHDOG
+	/* DeInitialize watchdog */
+	Chip_WWDT_DeInit(LPC_WWDT);
+#endif	/* WATCHDOG */
 
 	/* DeInitialize SPI peripheral */
 	Chip_SSP_DeInit(LPC_SSP0);

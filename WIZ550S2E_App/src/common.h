@@ -9,7 +9,7 @@
 
 #define MAJOR_VER		1
 #define MINOR_VER		3
-#define MAINTENANCE_VER	0
+#define MAINTENANCE_VER	1
 
 #define SOCK_DATA		0
 #define SOCK_CONFIG		1
@@ -22,6 +22,8 @@
 
 #define APP_BASE		0x6000
 #define WORK_BUF_SIZE	1024
+
+#define WATCHDOG		1	// 0 : disable, 1 : enable
 
 extern uint8_t op_mode;
 
